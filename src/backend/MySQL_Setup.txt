@@ -1,0 +1,14 @@
+mysql> CREATE DATABASE smartpill;
+Query OK, 1 row affected (0.02 sec)
+
+mysql> CREATE USER 'smartpilladmin'@'localhost' IDENTIFIED BY 'iastate13';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> USE smartpill;
+Database changed
+
+mysql> GRANT ALL ON smartpill.* TO 'smartpilladmin'@'localhost';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> quit;
+Bye
