@@ -8,19 +8,22 @@ import shared.PrescriptionDateTime;
 public class PrescriptionDateTimeDAO implements SQLDAO<PrescriptionDateTime, Integer> {
 
 	@Override
-	public void insert(PrescriptionDateTime dao) throws SQLException {
+	public PrescriptionDateTime insert(PrescriptionDateTime dao) throws SQLException {
+		return null;
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void update(PrescriptionDateTime dao) throws SQLException {
+	public boolean update(PrescriptionDateTime dao) throws SQLException {
+		return false;
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void delete(PrescriptionDateTime dao) throws SQLException {
+	public boolean delete(PrescriptionDateTime dao) throws SQLException {
+		return false;
 		// TODO Auto-generated method stub
 		
 	}

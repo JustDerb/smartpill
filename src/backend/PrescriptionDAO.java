@@ -8,19 +8,22 @@ import shared.Prescription;
 public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 
 	@Override
-	public void insert(Prescription dao) throws SQLException {
+	public Prescription insert(Prescription dao) throws SQLException {
+		return null;
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void update(Prescription dao) throws SQLException {
+	public boolean update(Prescription dao) throws SQLException {
+		return false;
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void delete(Prescription dao) throws SQLException {
+	public boolean delete(Prescription dao) throws SQLException {
+		return false;
 		// TODO Auto-generated method stub
 		
 	}

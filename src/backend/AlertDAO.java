@@ -8,21 +8,21 @@ import shared.Alert;
 public class AlertDAO implements SQLDAO<Alert, Integer> {
 
 	@Override
-	public void insert(Alert dao) throws SQLException {
+	public Alert insert(Alert dao) throws SQLException {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 
 	@Override
-	public void update(Alert dao) throws SQLException {
+	public boolean update(Alert dao) throws SQLException {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
-	public void delete(Alert dao) throws SQLException {
+	public boolean delete(Alert dao) throws SQLException {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
@@ -36,5 +36,4 @@ public class AlertDAO implements SQLDAO<Alert, Integer> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }
