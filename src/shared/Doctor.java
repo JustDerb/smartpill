@@ -16,18 +16,24 @@ public class Doctor implements Serializable {
 	
 	public String email;
 	
+	public final String salt;
+	
+	public final String password;
+	
 	public Doctor() {
 		this("", "", "");
 	}
 	
 	public Doctor(String username, String name, String email) {
-		this(null, username, name, email);
+		this(null, username, name, email, "", "");
 	}
 	
-	public Doctor(Integer id, String username, String name, String email) {
+	public Doctor(Integer id, String username, String name, String email, String salt, String password) {
 		this.id = null;
 		this.username = username;
 		this.name = name;
 		this.email = email;
+		this.salt = salt;
+		this.password = password;
 	}
 }
