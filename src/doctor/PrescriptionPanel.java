@@ -14,11 +14,15 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class PerscriptionPanel extends JPanel {
+public class PrescriptionPanel extends JPanel {
 	
-	public PerscriptionPanel(){
+	//gui elements
+	private JButton submitButton;
+	
+	public PrescriptionPanel(){
 		super(new GridBagLayout());
 		
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -35,16 +39,68 @@ public class PerscriptionPanel extends JPanel {
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		add(new SchedulerPanel(), gbc);
+		
+		submitButton = new JButton("Submit");
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.weightx = 0;
+		gbc.weighty = 0;
+		gbc.insets = new Insets(3, 3, 3, 0);
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.NONE;
+		add(submitButton, gbc);
 		
 		JPanel spacer = new JPanel();
 		gbc.gridx = 0;
-		gbc.gridy = 2;
+		gbc.gridy = 3;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.fill = GridBagConstraints.BOTH;
 		add(spacer, gbc);
+		
+		submitButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String prescription = chooserField.getText();
+				
+				//quick input check to make sure that the url provided is valid
+				String link = urlField.getText();
+				try{
+					new Source(link);
+				}
+				catch (Exception e){
+					String message = "The url you provided for the picture is not valid please fix the link and try again or choose a new link.";
+					JOptionPane.showMessageDialog(PrescriptionPanel.this, message);
+					//end this method so they are forced to change the value to something valid
+					return;
+				}
+				
+				//input check the refill period to make sure that it is a valid number
+				int refillPeriod = 0;
+				try{
+					refillPeriod = Integer.parseInt(refillField.getText());
+				}
+				catch (NumberFormatException e){
+					JOptionPane.showMessageDialog(PrescriptionPanel.this, "Please provide a valid integer for the number of days between refills.");
+					//end this method so they are forced to change the value to something valid
+					return;
+				}
+				
+				String dosage = dosageField.getText();
+				String message = messageField.getText();
+				
+				System.out.println("prescription = " + prescription);
+				System.out.println("link = " + link);
+				System.out.println("refill period = " + refillPeriod);
+				System.out.println("dosage = " + dosage);
+				System.out.println("message = " + message);
+			}
+			
+		});
 	}
 	
 	//gui elements
@@ -59,7 +115,7 @@ public class PerscriptionPanel extends JPanel {
 	private JPanel infoPanel(){
 		JPanel ret = new JPanel(new GridBagLayout());
 		
-		infoLabel = new JLabel("Add Prescription");
+		infoLabel = new JLabel("Prescription Information");
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -151,6 +207,7 @@ public class PerscriptionPanel extends JPanel {
 		private Integer minutesArr[];
 		
 		//gui elements
+		private JPanel scheduleHeaderPanel;
 		private JLabel scheduleLabel;
 		private Seperator scheduleSeperator;
 		private JLabel chooseTimeLabel;
@@ -179,6 +236,7 @@ public class PerscriptionPanel extends JPanel {
 			gbc.gridy = 0;
 			gbc.weightx = 0;
 			gbc.weighty = 0;
+			gbc.insets = new Insets(0, 3, 0, 0);
 			gbc.fill = GridBagConstraints.NONE;
 			add(scheduleLabel, gbc);
 			
@@ -186,6 +244,7 @@ public class PerscriptionPanel extends JPanel {
 			gbc = new GridBagConstraints();
 			gbc.gridx = 0;
 			gbc.gridy = 1;
+			gbc.gridwidth = 5;
 			gbc.weightx = 1;
 			gbc.weighty = 0;
 			gbc.insets = new Insets(3, 0, 3, 0);
@@ -208,6 +267,7 @@ public class PerscriptionPanel extends JPanel {
 			gbc.gridy = 2;
 			gbc.weightx = 0;
 			gbc.weighty = 0;
+			gbc.insets = new Insets(3, 0, 0, 3);
 			gbc.fill = GridBagConstraints.NONE;
 			add(hourChoosers.get(0), gbc);
 			
@@ -218,6 +278,7 @@ public class PerscriptionPanel extends JPanel {
 			gbc.gridy = 2;
 			gbc.weightx = 0;
 			gbc.weighty = 0;
+			gbc.insets = new Insets(3, 3, 0, 3);
 			gbc.fill = GridBagConstraints.NONE;
 			add(minuteChoosers.get(0), gbc);
 			
@@ -227,6 +288,7 @@ public class PerscriptionPanel extends JPanel {
 			gbc.gridy = 2;
 			gbc.weightx = 0;
 			gbc.weighty = 0;
+			gbc.insets = new Insets(3, 3, 0, 3);
 			gbc.fill = GridBagConstraints.NONE;
 			add(addTimeButton, gbc);
 			
@@ -247,12 +309,9 @@ public class PerscriptionPanel extends JPanel {
 					JComboBox<Integer> minuteBox = new JComboBox<Integer>(minutesArr);
 					minuteChoosers.add(minuteBox);
 					
-					System.out.println("hour size = " + hourChoosers.size());
-					System.out.println("minute size = " + minuteChoosers.size());
-					
 					GridBagConstraints gbc = new GridBagConstraints();
 					gbc.gridx = 1;
-					gbc.gridy = hourChoosers.size() - 1;
+					gbc.gridy = hourChoosers.size() + 1;
 					gbc.weightx = 0;
 					gbc.weighty = 0;
 					gbc.fill = GridBagConstraints.NONE;
@@ -260,7 +319,7 @@ public class PerscriptionPanel extends JPanel {
 					
 					gbc = new GridBagConstraints();
 					gbc.gridx = 2;
-					gbc.gridy = minuteChoosers.size() - 1;
+					gbc.gridy = minuteChoosers.size() + 1;
 					gbc.weightx = 0;
 					gbc.weighty = 0;
 					gbc.fill = GridBagConstraints.NONE;
@@ -276,7 +335,7 @@ public class PerscriptionPanel extends JPanel {
 	public static void main(String[] args){
 		JFrame frame = new JFrame();
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new PerscriptionPanel(), BorderLayout.CENTER);
+		panel.add(new PrescriptionPanel(), BorderLayout.CENTER);
 		frame.add(panel);
 		frame.setVisible(true);
 		frame.setSize(400, 400);
