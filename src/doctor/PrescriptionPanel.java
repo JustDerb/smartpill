@@ -21,6 +21,7 @@ public class PrescriptionPanel extends JPanel {
 	
 	//gui elements
 	private JButton submitButton;
+	private SchedulerPanel schedulerPanel;
 	
 	public PrescriptionPanel(){
 		super(new GridBagLayout());
@@ -33,6 +34,7 @@ public class PrescriptionPanel extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		add(infoPanel(), gbc);
 		
+		schedulerPanel = new SchedulerPanel();
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 1;
@@ -40,7 +42,7 @@ public class PrescriptionPanel extends JPanel {
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		add(new SchedulerPanel(), gbc);
+		add(schedulerPanel, gbc);
 		
 		submitButton = new JButton("Submit");
 		gbc = new GridBagConstraints();
@@ -92,12 +94,16 @@ public class PrescriptionPanel extends JPanel {
 				
 				String dosage = dosageField.getText();
 				String message = messageField.getText();
+				List<Pair<Integer, Integer>> times = schedulerPanel.getTimes();
 				
 				System.out.println("prescription = " + prescription);
 				System.out.println("link = " + link);
 				System.out.println("refill period = " + refillPeriod);
 				System.out.println("dosage = " + dosage);
 				System.out.println("message = " + message);
+				for (Pair<Integer, Integer> pair: times){
+					System.out.println(pair.getLeft() + ":" + pair.getRight());
+				}
 			}
 			
 		});
@@ -301,6 +307,8 @@ public class PrescriptionPanel extends JPanel {
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 			add(space, gbc);
 			
+			//when pressed a new hour and minute drop down appear below the lowest hour and minute drop down so that multiple times
+			//per day can be scheduled for the patient to take a pill.
 			addTimeButton.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -329,6 +337,21 @@ public class PrescriptionPanel extends JPanel {
 					repaint();
 				}
 			});
+		}
+		
+		/**
+		 * @return Returns the times that are currently chosen in the drop down menus, the hour is the left value in the pair and
+		 * the minutes value is the right value in the pair.
+		 */
+		public List<Pair<Integer, Integer>> getTimes(){
+			List<Pair<Integer, Integer>> times = new ArrayList<Pair<Integer, Integer>>();
+			
+			for (int i = 0; i < hourChoosers.size(); i++){
+				Pair<Integer, Integer> temp = new Pair<Integer, Integer>((Integer) hourChoosers.get(i).getSelectedItem(), (Integer) minuteChoosers.get(i).getSelectedItem());
+				times.add(temp);
+			}
+			
+			return times;
 		}
 	}
 	
