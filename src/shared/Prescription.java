@@ -22,10 +22,6 @@ public class Prescription implements Serializable {
 
 	public List<PrescriptionDateTime> dateTimes;
 
-	public Prescription() {
-		this("", "", "", "", new ArrayList<PrescriptionDateTime>());
-	}
-
 	public Prescription(String name, String description, String picturePath,
 			String dosage, List<PrescriptionDateTime> dateTimes) {
 		this(null, name, description, picturePath, dosage, dateTimes);
