@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import shared.Patient;
 import shared.Prescription;
 import shared.PrescriptionDateTime;
 
@@ -120,6 +121,29 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		sb.append(PrescriptionDAO.TABLE);
 		PreparedStatement ps = conn.prepareStatement(sb.toString());
 
+		// Try and add it
+		ResultSet result = ps.executeQuery();
+
+		List<Prescription> list = new ArrayList<Prescription>();
+
+		while (result.next()) {
+			list.add(findByPrimaryKey(result.getInt("id")));
+		}
+
+		return list;
+	}
+	
+	public List<Prescription> findByPatient(Patient dao) throws SQLException {
+		Connection conn = SQLDatabase.getConnection();
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT id FROM ");
+		sb.append(PrescriptionDAO.TABLE);
+		sb.append(" WHERE for_patient_id = ? ");
+		PreparedStatement ps = conn.prepareStatement(sb.toString());
+
+		ps.setInt(1, dao.id);
+		
 		// Try and add it
 		ResultSet result = ps.executeQuery();
 
