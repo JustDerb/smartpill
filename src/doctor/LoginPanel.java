@@ -10,14 +10,24 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class LoginPanel extends JPanel {
+	/**
+	 *	Default Serialization 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Keeps track of which view is currently visible to the user.
+	 */
+	private int view;
+	
+	
 	//static variables to define the two views
 	private static int LOGIN = 0;
 	private static int CREATE = 1;
-	
-	private int view;
 	
 	//gui elements
 	private JPanel loginPanel;
@@ -74,7 +84,7 @@ public class LoginPanel extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		loginPanel.add(loginUsernameField, gbc);
 		
-		loginPasswordField = new EntryField("Password");
+		loginPasswordField = new EntryField("Password", true);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 3;
@@ -128,7 +138,10 @@ public class LoginPanel extends JPanel {
 		loginSubmitButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				checkLoginInfo();
+				boolean validated = checkLoginInfo();
+				if (!validated){
+					JOptionPane.showMessageDialog(LoginPanel.this, "The password you have provided is not correct for the given username!");
+				}
 			}
 		});
 		
@@ -158,9 +171,11 @@ public class LoginPanel extends JPanel {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
+		gbc.gridwidth = 3;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.insets = new Insets(0, 3, 0, 0);
+		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		createUserPanel.add(createLabel, gbc);
 		
@@ -186,7 +201,7 @@ public class LoginPanel extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		createUserPanel.add(createUsernameField, gbc);
 		
-		createPasswordField = new EntryField("Password");
+		createPasswordField = new EntryField("Password", true);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 3;
@@ -237,6 +252,7 @@ public class LoginPanel extends JPanel {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.insets = new Insets(3, 3, 3, 3);
+		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		createUserPanel.add(createSubmitButton, gbc);
 		
@@ -247,7 +263,8 @@ public class LoginPanel extends JPanel {
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.insets = new Insets(3, 3, 3, 0);
-		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		createUserPanel.add(createCancelButton, gbc);
 		
 		//spacer panel to push the buttons to the left side of the panel
@@ -273,7 +290,7 @@ public class LoginPanel extends JPanel {
 		createSubmitButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				createNewUser();
+				boolean created = createNewUser();
 			}
 		});
 		
@@ -304,6 +321,38 @@ public class LoginPanel extends JPanel {
 	 * @return true if the new user was successfully created. Action could fail if for instance chosen username is already taken.
 	 */
 	private boolean createNewUser(){
+		//do input validation
+		if (createUsernameField.getText() == null || "".equals(createUsernameField.getText())){
+			JOptionPane.showMessageDialog(LoginPanel.this, "Please provide a valid username.");
+			return false;
+		}
+		
+		if (createPasswordField.getText() == null || createPasswordField.getText().length() < 6){
+			JOptionPane.showMessageDialog(LoginPanel.this, "The password you have choosen is too short, it must be 6 characters or longer.");
+			return false;
+		}
+		
+		if (createEmailField.getText() == null || "".equals(createEmailField.getText())){
+			JOptionPane.showMessageDialog(LoginPanel.this, "You must provide an email address to register.");
+			return false;
+		}
+		//if no @ symbol is found it clearly isn't a valid email address, this is a bare minimum of input validation ideally a confirmation
+		//email would be used to verify a email address, but for now this all we will do.
+		else if (createEmailField.getText().split("@").length < 2){
+			JOptionPane.showMessageDialog(LoginPanel.this, "The email address you have provided is not valid.");
+			return false;
+		}
+		
+		if (createFirstNameField.getText() == null || "".equals(createFirstNameField.getText())){
+			JOptionPane.showMessageDialog(LoginPanel.this, "You must provide a first name to register.");
+			return false;
+		}
+		
+		if (createLastNameField.getText() == null || "".equals(createLastNameField.getText())){
+			JOptionPane.showMessageDialog(LoginPanel.this, "You must provide a last name to register.");
+			return false;
+		}
+		
 		//TODO
 		System.out.println("Creating a new user");
 		System.out.println("username = " + createUsernameField.getText());
@@ -311,6 +360,7 @@ public class LoginPanel extends JPanel {
 		System.out.println("email = " + createEmailField.getText());
 		System.out.println("first name = " + createFirstNameField.getText());
 		System.out.println("last name = " + createLastNameField.getText());
+		
 		return true;
 	}
 	
@@ -319,11 +369,18 @@ public class LoginPanel extends JPanel {
 	 */
 	private void switchPanels(){
 		if (view == LOGIN){
+			createUsernameField.setText("");
+			createPasswordField.setText("");
+			createEmailField.setText("");
+			createFirstNameField.setText("");
+			createLastNameField.setText("");
 			removeAll();
 			add(createUserPanel, BorderLayout.CENTER);
 			view = CREATE;
 		}
 		else{
+			loginUsernameField.setText("");
+			loginPasswordField.setText("");
 			removeAll();
 			add(loginPanel, BorderLayout.CENTER);
 			view = LOGIN;

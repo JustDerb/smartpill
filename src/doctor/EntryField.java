@@ -6,6 +6,7 @@ import java.awt.Insets;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class EntryField extends JPanel {
@@ -25,6 +26,11 @@ public class EntryField extends JPanel {
 	private int blanks;
 	
 	/**
+	 * Whether a field should be consider a password field or not.
+	 */
+	private boolean password;
+	
+	/**
 	 * Label portion of the entry field
 	 */
 	private JLabel label;
@@ -38,6 +44,15 @@ public class EntryField extends JPanel {
 		super(new GridBagLayout());
 		labelText = name;
 		blanks = 1;
+		password = false;
+		initialize();
+	}
+	
+	public EntryField(String name, boolean password){
+		super(new GridBagLayout());
+		labelText = name;
+		blanks = 1;
+		this.password = password;
 		initialize();
 	}
 	
@@ -45,6 +60,7 @@ public class EntryField extends JPanel {
 		super(new GridBagLayout());
 		labelText = name;
 		this.blanks = blanks;
+		password = false;
 		initialize();
 	}
 	
@@ -59,7 +75,12 @@ public class EntryField extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		add(label, gbc);
 		
-		field = new JTextField();
+		if (!password){
+			field = new JTextField();
+		}
+		else{
+			field = new JPasswordField();
+		}
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.gridy = 0;
@@ -82,10 +103,18 @@ public class EntryField extends JPanel {
 	}
 	
 	/**
-	 * Gets the text that is currently in the JTextField.
+	 * Gets the text that is currently in the text field.
 	 * @return The text currently typed into the EntryField.
 	 */
 	public String getText(){
 		return field.getText();
+	}
+	
+	/**
+	 * Sets the text that is currently in the text field.
+	 * @param text is the String to be displayed in the text field.
+	 */
+	public void setText(String text){
+		field.setText(text);
 	}
 }
