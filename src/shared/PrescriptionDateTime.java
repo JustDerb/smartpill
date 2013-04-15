@@ -13,6 +13,8 @@ public class PrescriptionDateTime implements Serializable {
 
 	public Integer id;
 	
+	public Integer forPrescription;
+	
 	/**
 	 * Do not use right now, since it doesn't work
 	 */
@@ -20,16 +22,17 @@ public class PrescriptionDateTime implements Serializable {
 	
 	public Time timeOfDay;
 	
-	public PrescriptionDateTime() {
-		this(null, new Time(System.currentTimeMillis()));
+	public PrescriptionDateTime(Prescription forPrescription) {
+		this(forPrescription, new Time(System.currentTimeMillis()));
 	}
 	
-	public PrescriptionDateTime(Time timeOfDay) {
-		this(null, timeOfDay);
+	public PrescriptionDateTime(Prescription forPrescription, Time timeOfDay) {
+		this(null, forPrescription.id, timeOfDay);
 	}
 	
-	public PrescriptionDateTime(Integer id, Time timeOfDay) {
+	public PrescriptionDateTime(Integer id, Integer forPrescription, Time timeOfDay) {
 		this.id = id;
 		this.timeOfDay = timeOfDay;
+		this.forPrescription = forPrescription;
 	}
 }
