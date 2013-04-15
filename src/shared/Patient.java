@@ -14,17 +14,16 @@ public class Patient implements Serializable {
 	
 	public String email;
 	
-	public Patient() {
-		this("", "");
+	public String smsEmail;
+	
+	public Patient(String name, String email, String smsEmail) {
+		this(null, name, email, smsEmail);
 	}
 	
-	public Patient(String name, String email) {
-		this(null, name, email);
-	}
-	
-	public Patient(Integer id, String name, String email) {
+	public Patient(Integer id, String name, String email, String smsEmail) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
+		this.smsEmail = smsEmail;
 	}
 }
