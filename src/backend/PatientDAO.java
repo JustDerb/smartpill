@@ -68,7 +68,8 @@ public class PatientDAO implements SQLDAO<Patient, Integer> {
 		// Try and add it
 		ps.execute();
 
-		return ps.getUpdateCount() > 0;	}
+		return ps.getUpdateCount() > 0;
+	}
 
 	@Override
 	public boolean delete(Patient dao) throws SQLException {
