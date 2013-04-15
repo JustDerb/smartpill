@@ -3,7 +3,9 @@ package backend;
 import java.sql.SQLException;
 import java.util.List;
 
+import shared.Alert;
 import shared.Doctor;
+import shared.Alert.AlertType;
 
 public class launcher {
 
@@ -14,10 +16,27 @@ public class launcher {
 	public static void main(String[] args) {
 		try {
 			testDoctor();
+			testAlert();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
 		}
+	}
+	
+	private static void testAlert() throws SQLException {
+		Doctor doc = new Doctor("DocAlert", "Doctor Name", "doctor@email.com");
+		DoctorDAO docDAO = new DoctorDAO();
+		doc = docDAO.insert(doc, "blah");
+		//String title, String message, AlertType type, Doctor forDoctor
+		Alert alert = new Alert("This is a title", "This is a message", Alert.AlertType.DOCTOR, doc);
+		AlertDAO alertDAO = new AlertDAO();
+		alertDAO.eraseTable();
+		alert = alertDAO.insert(alert);
+
+		
+		
+		if (!docDAO.delete(doc))
+			throw new IllegalArgumentException("Could not delete");
 	}
 	
 	private static void testDoctor() throws SQLException {
@@ -43,7 +62,8 @@ public class launcher {
 		if (!docDAO.update(doc))
 			throw new IllegalArgumentException("Could not update");
 		
-		docDAO.delete(doc);
+		if (!docDAO.delete(doc))
+			throw new IllegalArgumentException("Could not delete");
 	}
 
 }
