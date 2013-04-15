@@ -53,7 +53,8 @@ public class AlertDAO implements SQLDAO<Alert, Integer> {
 		ResultSet rs = ps.getGeneratedKeys();
 		if (rs.next()){
 			// Retrieve the newly created id and pass back the Alert object
-		    return findByPrimaryKey(rs.getInt(1));
+		    dao.id = rs.getInt(1);
+		    return dao;
 		}
 		else
 			throw new SQLException("Coul not retrieve updated values");
