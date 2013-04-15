@@ -19,6 +19,9 @@ public class PrescriptionDateTimeDAO implements
 	@Override
 	public PrescriptionDateTime insert(PrescriptionDateTime dao)
 			throws SQLException {
+		if (dao.forPrescription == null)
+			throw new SQLException("PrescriptionDateTime.forPrescription cannot be null");
+		
 		Connection conn = SQLDatabase.getConnection();
 
 		StringBuilder sb = new StringBuilder();
@@ -44,7 +47,7 @@ public class PrescriptionDateTimeDAO implements
 			dao.id = rs.getInt(1);
 			return dao;
 		} else
-			throw new SQLException("Coul not retrieve updated values");
+			throw new SQLException("Could not retrieve updated values");
 	}
 
 	@Override
