@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import backend.DAO.AlertDAO;
+import backend.DAO.DoctorDAO;
+
 import shared.Alert;
 import shared.Doctor;
 import shared.SmartPillDefaults;

@@ -1,4 +1,4 @@
-package backend;
+package backend.DAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import backend.SQLDatabase;
 
 import shared.Patient;
 import shared.Prescription;

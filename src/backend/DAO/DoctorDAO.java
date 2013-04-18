@@ -1,4 +1,4 @@
-package backend;
+package backend.DAO;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import backend.SQLDatabase;
 
 import shared.Doctor;
 
