@@ -39,6 +39,8 @@ public abstract class TCPClient implements Runnable {
 	public void sendMessage(Serializable s) throws IOException {
 		if (!this.sock.isClosed())
 			this.outToClient.writeObject(s);
+		else
+			throw new IOException("Socket closed.");
 	}
 
 	public void close() {

@@ -20,6 +20,9 @@ public class TCPEchoClient extends TCPClient {
 				Thread.sleep(1000);
 				client.sendMessage(new Patient("Name", "Email", "SmsEmail"));
 			} catch (InterruptedException e) {
+			} catch (IOException e)
+			{
+				break;
 			}
 		}
 	}

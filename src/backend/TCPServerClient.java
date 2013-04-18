@@ -3,7 +3,7 @@ package backend;
 import java.io.IOException;
 import java.net.Socket;
 
-import shared.TCPClient;
+import shared.*;
 
 public class TCPServerClient extends TCPClient {
 
@@ -13,7 +13,15 @@ public class TCPServerClient extends TCPClient {
 
 	@Override
 	public void receivedObject(Object obj, TCPClient client) {
-		System.out.println("Received: " + obj.getClass().getName());
+		if (obj instanceof Patient) {
+			Patient p = (Patient)obj;
+			System.out.println("Received Patient: " + p.name);
+		} else if (obj instanceof DatabaseControl) {
+			DatabaseControl dbc = (DatabaseControl)obj;
+			System.out.println("Received DatabaseControl: " + dbc.action.name());
+		} else {
+			System.out.println("Received: " + obj.getClass().getName());
+		}
 	}
 
 }
