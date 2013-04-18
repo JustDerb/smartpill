@@ -1,26 +1,35 @@
 package backend;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
 import shared.Alert;
 import shared.Doctor;
-import shared.Alert.AlertType;
+import shared.SmartPillDefaults;
 
 public class launcher {
 
 	/**
 	 * @param args
+	 * @throws IOException 
 	 * @throws SQLException 
 	 */
-	public static void main(String[] args) {
-		try {
-			testDoctor();
-			testAlert();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return;
-		}
+	public static void main(String[] args) throws IOException {
+//		try {
+//			testDoctor();
+//			testAlert();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			return;
+//		}
+		TCPServer server = new TCPServer(SmartPillDefaults.SERVER_PORT);
+		Thread serverThread = new Thread(server);
+		serverThread.start();
+		
+		System.out.println("Listening...");
+		
+		while (true) ;
 	}
 	
 	private static void testAlert() throws SQLException {
