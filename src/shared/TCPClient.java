@@ -42,6 +42,13 @@ public abstract class TCPClient implements Runnable {
 		else
 			throw new IOException("Socket closed.");
 	}
+	
+	public void trySendMessage(Serializable s) {
+		try {
+			this.sendMessage(s);
+		} catch (IOException e) {
+		}
+	}
 
 	public void close() {
 		tryClose();
@@ -52,9 +59,7 @@ public abstract class TCPClient implements Runnable {
 		while (!this.sock.isClosed()) {
 			Object s = null;
 			try {
-				System.out.println("Client listening...");
 				s = this.inFromClient.readObject();
-				System.out.println("Got object!");
 			} catch (ClassNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
@@ -76,6 +81,5 @@ public abstract class TCPClient implements Runnable {
 			this.sock.close();
 		} catch (IOException e1) {
 		}
-		System.out.println("Client closed.");
 	}
 }

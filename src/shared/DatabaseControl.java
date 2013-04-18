@@ -11,7 +11,7 @@ public class DatabaseControl implements Serializable {
 
 	public enum DbType {
 		CREATE,
-		RETRIEVE,
+		//RETRIEVE,
 		UPDATE,
 		DELETE
 	}
