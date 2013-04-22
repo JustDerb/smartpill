@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -24,6 +23,11 @@ public class LoginPanel extends JPanel {
 	 */
 	private int view;
 	
+	/**
+	 * The parent of this object.
+	 */
+	private FrontendGUI parent;
+	
 	
 	//static variables to define the two views
 	private static int LOGIN = 0;
@@ -33,8 +37,9 @@ public class LoginPanel extends JPanel {
 	private JPanel loginPanel;
 	private JPanel createUserPanel;
 	
-	public LoginPanel(){
+	public LoginPanel(FrontendGUI parent){
 		super(new BorderLayout());
+		this.parent = parent;
 		createUserPanelInit();
 		loginPanelInit();
 		add(loginPanel, BorderLayout.CENTER);
@@ -290,7 +295,7 @@ public class LoginPanel extends JPanel {
 		createSubmitButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean created = createNewUser();
+				createNewUser();
 			}
 		});
 		
@@ -307,13 +312,12 @@ public class LoginPanel extends JPanel {
 	 * @return true if the user has provided the correct password associated with chosen username, false if not.
 	 */
 	private boolean checkLoginInfo(){
-		//TODO
-		System.out.println("username = " + loginUsernameField.getText());
-		System.out.println("password = " + loginPasswordField.getText());
-		if (loginUsernameField.getText().equals("username") && loginPasswordField.getText().equals("password")){
-			return true;
+		boolean verified = parent.verifyLogin(loginUsernameField.getText(), loginPasswordField.getText());
+		//if verified then switch the view of the parent
+		if (verified){
+			parent.setState(FrontendGUI.HOME);
 		}
-		return false;
+		return verified;
 	}
 	
 	/**
@@ -353,15 +357,19 @@ public class LoginPanel extends JPanel {
 			return false;
 		}
 		
-		//TODO
-		System.out.println("Creating a new user");
-		System.out.println("username = " + createUsernameField.getText());
-		System.out.println("password = " + createPasswordField.getText());
-		System.out.println("email = " + createEmailField.getText());
-		System.out.println("first name = " + createFirstNameField.getText());
-		System.out.println("last name = " + createLastNameField.getText());
-		
-		return true;
+		String username = createUsernameField.getText();
+		String password = createPasswordField.getText();
+		String email = createEmailField.getText();
+		String firstName = createFirstNameField.getText();
+		String lastName = createLastNameField.getText();
+		boolean verified = parent.verifyNewUser(username, password, email, firstName, lastName);
+		//switch view if the new account is given the okay
+		if (verified){
+			//first let user know that the account creation process was a success
+			JOptionPane.showMessageDialog(LoginPanel.this, "Your account has been made successfully!");
+			parent.setState(FrontendGUI.HOME);
+		}
+		return verified;
 	}
 	
 	/**
@@ -387,16 +395,6 @@ public class LoginPanel extends JPanel {
 		}
 		revalidate();
 		repaint();
-	}
-	
-	public static void main(String[] args){
-		JFrame frame = new JFrame();
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new LoginPanel(), BorderLayout.CENTER);
-		frame.add(panel);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-		frame.setSize(400, 400);
 	}
 	
 }
