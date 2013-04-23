@@ -2,7 +2,7 @@ package shared;
 
 import java.io.Serializable;
 
-public class RetrievalMessage {
+public class RetrievalMessage implements Serializable {
 
 	// TODO: Make these sub classes for easier argument population
 	public enum Retrieve {
