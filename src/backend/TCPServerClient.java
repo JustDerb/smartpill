@@ -105,7 +105,8 @@ public class TCPServerClient extends TCPClient {
 			return alertDb.insert((Alert) obj);
 		} else if (obj instanceof Doctor) {
 			DoctorDAO doctorDb = new DoctorDAO();
-			return doctorDb.insert((Doctor) obj);
+			Doctor doc = (Doctor) obj;
+			return doctorDb.insert(doc, doc.password);
 		} else if (obj instanceof Patient) {
 			PatientDAO patientDb = new PatientDAO();
 			return patientDb.insert((Patient) obj);
