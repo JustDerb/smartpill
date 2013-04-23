@@ -82,10 +82,10 @@ public class FrontendGUI {
 		Doctor d = new Doctor(null, username, "", "", "", password);
 		RetrievalMessage rMessage = new RetrievalMessage(Retrieve.DOC_CHECK_LOGIN, d);
 		try {
-			tcpClient.sendMessage(dbControl);
+			tcpClient.sendMessage(rMessage);
 			Object obj = tcpClient.getResponse();
-			if (obj instanceof DatabaseControl){
-				doctor = (Doctor) ((DatabaseControl) obj).object;
+			if (obj instanceof Doctor){
+				doctor = (Doctor) obj;
 				return true;
 			}
 			else{
