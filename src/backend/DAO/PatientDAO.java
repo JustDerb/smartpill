@@ -116,6 +116,29 @@ public class PatientDAO implements SQLDAO<Patient, Integer> {
 
 		return list;
 	}
+	
+	public ArrayList<Patient> findByDoctor(Doctor doc) throws SQLException {
+		Connection conn = SQLDatabase.getConnection();
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT id FROM ");
+		sb.append(PatientDAO.TABLE);
+		sb.append(" WHERE for_doctor = ? ");
+		PreparedStatement ps = conn.prepareStatement(sb.toString());
+		
+		ps.setInt(1, doc.id);
+
+		// Try and add it
+		ResultSet result = ps.executeQuery();
+
+		ArrayList<Patient> list = new ArrayList<Patient>();
+
+		while (result.next()) {
+			list.add(findByPrimaryKey(result.getInt("id")));
+		}
+
+		return list;
+	}
 
 	@Override
 	public Patient findByPrimaryKey(Integer key) throws SQLException {
