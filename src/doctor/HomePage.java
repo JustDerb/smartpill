@@ -45,6 +45,7 @@ public class HomePage extends JPanel {
 	private EntryField firstNameField;
 	private EntryField lastNameField;
 	private EntryField emailField;
+	private EntryField smsEmailField;
 	private JButton addButton;
 	private JLabel alertsLabel;
 	private Seperator alertsSeperator;
@@ -185,10 +186,20 @@ public class HomePage extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		newPatientSection.add(emailField, gbc);
 		
-		addButton = new JButton("Add");
+		smsEmailField = new EntryField("SMS Email:");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 5;
+		gbc.weightx = 1;
+		gbc.weighty = 0;
+		gbc.insets = new Insets(3, 3, 3, 0);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		newPatientSection.add(smsEmailField, gbc);
+		
+		addButton = new JButton("Add");
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 6;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -199,7 +210,7 @@ public class HomePage extends JPanel {
 		addButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				boolean added = parent.addPatient(firstNameField.getText(), lastNameField.getText(), emailField.getText());
+				boolean added = parent.addPatient(firstNameField.getText(), lastNameField.getText(), emailField.getText(), smsEmailField.getText());
 				if (!added){
 					JOptionPane.showMessageDialog(HomePage.this, "Was unable to add new patient!");
 				}

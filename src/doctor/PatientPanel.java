@@ -7,6 +7,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import shared.Patient;
+
 public class PatientPanel extends JPanel{
 	
 	/**
@@ -51,8 +53,15 @@ public class PatientPanel extends JPanel{
 	
 	private void headerPanelInit(){
 		headerPanel = new JPanel(new GridBagLayout());
+		Patient patient = parent.getCurrentPatient();
+		String name = "";
+		String email = "";
+		if (patient != null){
+			name = patient.name;
+			email = patient.email;
+		}
 		
-		headerNameLabel = new JLabel("Name here");
+		headerNameLabel = new JLabel("Name: " + name);
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -61,7 +70,7 @@ public class PatientPanel extends JPanel{
 		gbc.fill = GridBagConstraints.NONE;
 		headerPanel.add(headerNameLabel, gbc);
 		
-		headerEmailLabel = new JLabel("Email here");
+		headerEmailLabel = new JLabel("Email: " + email);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 1;

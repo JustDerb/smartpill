@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 import shared.DatabaseControl;
 import shared.Doctor;
+import shared.Patient;
 import shared.RetrievalMessage;
 import shared.RetrievalMessage.Retrieve;
 import shared.SmartPillDefaults;
@@ -37,6 +38,7 @@ public class FrontendGUI {
 	
 	private TCPUIClient tcpClient;
 	private Doctor doctor;
+	private Patient patient;
 	
 	//gui parts
 	private JFrame frame;
@@ -173,15 +175,49 @@ public class FrontendGUI {
 		//TODO
 	}
 	
-	public boolean addPatient(String firstName, String lastName, String email){
-		//TODO
-		if ("fail".equals(firstName)){
-			return false;
+	public boolean addPatient(String firstName, String lastName, String email, String smsEmail){
+		//TODO add field for smsEmail
+		Patient p = new Patient(firstName + " " + lastName, email, smsEmail);
+		DatabaseControl dbControl = new DatabaseControl(DatabaseControl.DbType.CREATE, p);
+		try {
+			tcpClient.sendMessage(dbControl);
+			Object obj = tcpClient.getResponse();
+			if (obj instanceof DatabaseControl){
+				patient = (Patient) ((DatabaseControl) obj).object;
+				return true;
+			}
+			else{
+				return false;
+			}
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
 		}
-		return true;
+		
+		return false;
 	}
 	
+	/**
+	 * Gets the frame that is used for the GUI.
+	 * @return Frame that is the parent of all panels used in the GUI.
+	 */
 	public JFrame getFrame(){
 		return frame;
+	}
+	
+	/**
+	 * Gets the patient that is currently being viewed by the doctor.
+	 * @return The patient that is currently being viewed by the doctor or null if no patient is currently being viewed.
+	 */
+	public Patient getCurrentPatient(){
+		return patient;
+	}
+	
+	/**
+	 * Gets the doctor that is currently logged into the system.
+	 * @return The doctor that is currently logged in or null if no doctor has logged into the system.
+	 */
+	public Doctor getDoctor(){
+		return doctor;
 	}
 }
