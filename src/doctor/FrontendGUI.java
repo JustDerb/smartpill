@@ -1,11 +1,19 @@
 package doctor;
 
 import java.awt.BorderLayout;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import shared.DatabaseControl;
+import shared.Doctor;
+import shared.RetrievalMessage;
+import shared.RetrievalMessage.Retrieve;
+import shared.SmartPillDefaults;
 
 public class FrontendGUI {
 	
@@ -17,21 +25,41 @@ public class FrontendGUI {
 	 * Indicates that the home page panel should be displayed.
 	 */
 	public static int HOME = 1;
+	/**
+	 * Indicates that the patient page panel should be displayed.
+	 */
+	public static int PATIENT = 2;
 	
 	/**
 	 * The current panel being displayed
 	 */
 	private int state;
 	
+	private TCPUIClient tcpClient;
+	private Doctor doctor;
+	
 	//gui parts
 	private JFrame frame;
 	private JPanel panel;
 	private LoginPanel loginPanel;
 	private HomePage homePanel;
+	private PatientPanel patientPanel;
 	
 	public FrontendGUI(){
+		try {
+			tcpClient = new TCPUIClient("10.24.87.53", SmartPillDefaults.SERVER_PORT);
+			Thread clientThread = new Thread(tcpClient);
+			clientThread.start();
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(frame, "Could not connect to server");
+			System.exit(0);
+			
+		}
 		loginPanel = new LoginPanel(this);
 		homePanel = new HomePage(this);
+		patientPanel = new PatientPanel(this);
 		
 		frame = new JFrame();
 		panel = new JPanel(new BorderLayout());
@@ -51,10 +79,23 @@ public class FrontendGUI {
 	 * @return true if the username and password are valid false if not.
 	 */
 	public boolean verifyLogin(String username, String password){
-		//TODO
-		if ("username".equals(username) && "password".equals(password)){
-			return true;
+		Doctor d = new Doctor(null, username, "", "", "", password);
+		RetrievalMessage rMessage = new RetrievalMessage(Retrieve.DOC_CHECK_LOGIN, d);
+		try {
+			tcpClient.sendMessage(dbControl);
+			Object obj = tcpClient.getResponse();
+			if (obj instanceof DatabaseControl){
+				doctor = (Doctor) ((DatabaseControl) obj).object;
+				return true;
+			}
+			else{
+				return false;
+			}
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
 		}
+		
 		return false;
 	}
 	
@@ -68,8 +109,24 @@ public class FrontendGUI {
 	 * @return true if the account was successfully created false if not.
 	 */
 	public boolean verifyNewUser(String username, String password, String email, String firstName, String lastName){
-		//TODO
-		return true;
+		Doctor d = new Doctor(null, username, firstName + " " + lastName, email, "", password);
+		DatabaseControl dbControl = new DatabaseControl(DatabaseControl.DbType.CREATE, d);
+		try {
+			tcpClient.sendMessage(dbControl);
+			Object obj = tcpClient.getResponse();
+			if (obj instanceof DatabaseControl){
+				doctor = (Doctor) ((DatabaseControl) obj).object;
+				return true;
+			}
+			else{
+				return false;
+			}
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 	public String[] getPatients(String regex){
@@ -96,6 +153,10 @@ public class FrontendGUI {
 			panel.add(homePanel, BorderLayout.CENTER);
 			state = HOME;
 		}
+		else if (view == PATIENT){
+			panel.add(patientPanel, BorderLayout.CENTER);
+			state = PATIENT;
+		}
 		panel.revalidate();
 		panel.repaint();
 	}
@@ -110,6 +171,14 @@ public class FrontendGUI {
 	
 	public void setPatient(String name){
 		//TODO
+	}
+	
+	public boolean addPatient(String firstName, String lastName, String email){
+		//TODO
+		if ("fail".equals(firstName)){
+			return false;
+		}
+		return true;
 	}
 	
 	public JFrame getFrame(){

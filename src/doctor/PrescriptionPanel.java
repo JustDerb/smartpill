@@ -19,6 +19,11 @@ import javax.swing.JPanel;
 
 public class PrescriptionPanel extends JPanel {
 	
+	/**
+	 * Default Serialization 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	//gui elements
 	private JButton submitButton;
 	private SchedulerPanel schedulerPanel;

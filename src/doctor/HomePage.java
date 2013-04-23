@@ -199,8 +199,14 @@ public class HomePage extends JPanel {
 		addButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//TODO create database entry for the newly added patient
-				System.out.println("adding " + firstNameField.getText() + " " + lastNameField.getText() + " " + emailField.getText());
+				boolean added = parent.addPatient(firstNameField.getText(), lastNameField.getText(), emailField.getText());
+				if (!added){
+					JOptionPane.showMessageDialog(HomePage.this, "Was unable to add new patient!");
+				}
+				else{
+					JOptionPane.showMessageDialog(HomePage.this, "The patient was added successfully!");
+					parent.setState(FrontendGUI.PATIENT);
+				}
 			}
 		});
 	}
@@ -291,6 +297,9 @@ public class HomePage extends JPanel {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					System.out.println(patientsList.getSelectedValue());
+					//TODO set the patient
+					parent.setState(FrontendGUI.PATIENT);
+					dispose();
 				}
 			});
 			

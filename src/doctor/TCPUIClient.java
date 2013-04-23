@@ -13,11 +13,17 @@ public class TCPUIClient extends TCPClient {
 	
 	public TCPUIClient(String IP, int port) throws IOException {
 		super(IP, port);
+		queue = new LinkedBlockingQueue<Object>();
 	}
 	
 	public Object getResponse()
 	{
-		return queue.poll();
+		try{
+			return queue.take();
+		} 
+		catch (InterruptedException e){
+			return null;
+		}
 	}
 
 	@Override

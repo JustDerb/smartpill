@@ -8,14 +8,25 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 public class PatientPanel extends JPanel{
+	
+	/**
+	 * Default Serialization
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * The parent of this object.
+	 */
+	private FrontendGUI parent;
 
 	//gui elements
 	private JTabbedPane tabPane;
 	private JPanel headerPanel;
 	private JLabel headerNameLabel;
+	private JLabel headerEmailLabel;
 	private PrescriptionPanel presPanel;
 	
-	public PatientPanel(){
+	public PatientPanel(FrontendGUI parent){
 		super(new GridBagLayout());
 		headerPanelInit();
 		
@@ -49,5 +60,14 @@ public class PatientPanel extends JPanel{
 		gbc.weighty = 0;
 		gbc.fill = GridBagConstraints.NONE;
 		headerPanel.add(headerNameLabel, gbc);
+		
+		headerEmailLabel = new JLabel("Email here");
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx = 0;
+		gbc.weighty = 1;
+		gbc.fill = GridBagConstraints.NONE;
+		headerPanel.add(headerEmailLabel, gbc);
 	}
 }
