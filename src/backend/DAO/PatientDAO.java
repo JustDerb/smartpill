@@ -94,7 +94,7 @@ public class PatientDAO implements SQLDAO<Patient, Integer> {
 	}
 
 	@Override
-	public List<Patient> findAll() throws SQLException {
+	public ArrayList<Patient> findAll() throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
 
 		StringBuilder sb = new StringBuilder();
@@ -105,7 +105,7 @@ public class PatientDAO implements SQLDAO<Patient, Integer> {
 		// Try and add it
 		ResultSet result = ps.executeQuery();
 
-		List<Patient> list = new ArrayList<Patient>();
+		ArrayList<Patient> list = new ArrayList<Patient>();
 
 		while (result.next()) {
 			list.add(findByPrimaryKey(result.getInt("id")));

@@ -115,7 +115,7 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 	}
 
 	@Override
-	public List<Prescription> findAll() throws SQLException {
+	public ArrayList<Prescription> findAll() throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
 
 		StringBuilder sb = new StringBuilder();
@@ -126,7 +126,7 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		// Try and add it
 		ResultSet result = ps.executeQuery();
 
-		List<Prescription> list = new ArrayList<Prescription>();
+		ArrayList<Prescription> list = new ArrayList<Prescription>();
 
 		while (result.next()) {
 			list.add(findByPrimaryKey(result.getInt("id")));
@@ -135,7 +135,7 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		return list;
 	}
 	
-	public List<Prescription> findByPatient(Patient dao) throws SQLException {
+	public ArrayList<Prescription> findByPatient(Patient dao) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
 
 		StringBuilder sb = new StringBuilder();
@@ -149,7 +149,7 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		// Try and add it
 		ResultSet result = ps.executeQuery();
 
-		List<Prescription> list = new ArrayList<Prescription>();
+		ArrayList<Prescription> list = new ArrayList<Prescription>();
 
 		while (result.next()) {
 			list.add(findByPrimaryKey(result.getInt("id")));
@@ -185,7 +185,7 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 			return null;
 	}
 	
-	private List<PrescriptionDateTime> grabTimes(Integer prescriptionID) throws SQLException {
+	private ArrayList<PrescriptionDateTime> grabTimes(Integer prescriptionID) throws SQLException {
 		return (new PrescriptionDateTimeDAO()).findByPrescriptionKey(prescriptionID);
 	}
 

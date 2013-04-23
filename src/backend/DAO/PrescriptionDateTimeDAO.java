@@ -96,7 +96,7 @@ public class PrescriptionDateTimeDAO implements
 	}
 
 	@Override
-	public List<PrescriptionDateTime> findAll() throws SQLException {
+	public ArrayList<PrescriptionDateTime> findAll() throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
 
 		StringBuilder sb = new StringBuilder();
@@ -107,7 +107,7 @@ public class PrescriptionDateTimeDAO implements
 		// Try and add it
 		ResultSet result = ps.executeQuery();
 
-		List<PrescriptionDateTime> list = new ArrayList<PrescriptionDateTime>();
+		ArrayList<PrescriptionDateTime> list = new ArrayList<PrescriptionDateTime>();
 
 		while (result.next()) {
 			list.add(findByPrimaryKey(result.getInt("id")));
@@ -140,7 +140,7 @@ public class PrescriptionDateTimeDAO implements
 			return null;
 	}
 
-	public List<PrescriptionDateTime> findByPrescriptionKey(Integer key)
+	public ArrayList<PrescriptionDateTime> findByPrescriptionKey(Integer key)
 			throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
 
@@ -155,7 +155,7 @@ public class PrescriptionDateTimeDAO implements
 		// Try and add it
 		ResultSet result = ps.executeQuery();
 
-		List<PrescriptionDateTime> list = new ArrayList<PrescriptionDateTime>();
+		ArrayList<PrescriptionDateTime> list = new ArrayList<PrescriptionDateTime>();
 
 		while (result.next()) {
 			list.add(findByPrimaryKey(result.getInt("id")));

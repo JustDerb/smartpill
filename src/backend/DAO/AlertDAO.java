@@ -114,7 +114,7 @@ public class AlertDAO implements SQLDAO<Alert, Integer> {
 	}
 
 	@Override
-	public List<Alert> findAll() throws SQLException {
+	public ArrayList<Alert> findAll() throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
 
 		StringBuilder sb = new StringBuilder();
@@ -125,7 +125,7 @@ public class AlertDAO implements SQLDAO<Alert, Integer> {
 		// Try and add it
 		ResultSet result = ps.executeQuery();
 
-		List<Alert> list = new ArrayList<Alert>();
+		ArrayList<Alert> list = new ArrayList<Alert>();
 		
 		while (result.next()) {
 			list.add(findByPrimaryKey(result.getInt("id")));
@@ -167,7 +167,7 @@ public class AlertDAO implements SQLDAO<Alert, Integer> {
 			return null;
 	}
 
-	public List<Alert> findByDoctor(Doctor doc) throws SQLException {
+	public ArrayList<Alert> findByDoctor(Doctor doc) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
 
 		StringBuilder sb = new StringBuilder();
@@ -181,7 +181,7 @@ public class AlertDAO implements SQLDAO<Alert, Integer> {
 		// Try and add it
 		ResultSet result = ps.executeQuery();
 
-		List<Alert> list = new ArrayList<Alert>();
+		ArrayList<Alert> list = new ArrayList<Alert>();
 		
 		while (result.next()) {
 			list.add(findByPrimaryKey(result.getInt("id")));

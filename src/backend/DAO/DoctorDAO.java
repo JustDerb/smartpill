@@ -149,7 +149,7 @@ public class DoctorDAO implements SQLDAO<Doctor, Integer> {
 	}
 
 	@Override
-	public List<Doctor> findAll() throws SQLException {
+	public ArrayList<Doctor> findAll() throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
 
 		StringBuilder sb = new StringBuilder();
@@ -160,7 +160,7 @@ public class DoctorDAO implements SQLDAO<Doctor, Integer> {
 		// Try and add it
 		ResultSet result = ps.executeQuery();
 		
-		List<Doctor> list = new ArrayList<Doctor>();
+		ArrayList<Doctor> list = new ArrayList<Doctor>();
 		
 		while (result.next()) {
 			list.add(findByPrimaryKey(result.getInt("id")));
