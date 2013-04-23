@@ -19,7 +19,7 @@ public class TCPServerClient extends TCPClient {
 		if (obj instanceof DatabaseControl) {
 			handleDatabaseControl((DatabaseControl) obj, client);
 		}
-		if (obj instanceof RetrievalMessage) {
+		else if (obj instanceof RetrievalMessage) {
 			handleRetrievalMessage((RetrievalMessage) obj, client);
 		} else {
 			handleOther(obj, client);
