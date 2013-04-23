@@ -4,9 +4,22 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-import shared.*;
-import backend.DAO.*;
+import shared.Alert;
+import shared.DatabaseControl;
+import shared.Doctor;
+import shared.Patient;
+import shared.PillMessage;
+import shared.Prescription;
+import shared.PrescriptionDateTime;
+import shared.RetrievalMessage;
+import shared.TCPClient;
+import backend.DAO.AlertDAO;
+import backend.DAO.DoctorDAO;
+import backend.DAO.PatientDAO;
+import backend.DAO.PrescriptionDAO;
+import backend.DAO.PrescriptionDateTimeDAO;
 
 public class TCPServerClient extends TCPClient {
 
@@ -50,6 +63,45 @@ public class TCPServerClient extends TCPClient {
 				} else {
 					throw new IllegalArgumentException(
 							"Please provide a Doctor object to check username, password");
+				}
+				break;
+			}
+			case DOC_GET_ALERTS:
+			{
+				if (msg.obj instanceof Doctor) {
+					Doctor doc = (Doctor) msg.obj;
+					AlertDAO alertDb = new AlertDAO();
+					ArrayList<Alert> alerts = alertDb.findByDoctor(doc);
+					returned = alerts;
+				} else {
+					throw new IllegalArgumentException(
+							"Please provide a Doctor object to get alerts");
+				}
+				break;
+			}
+			case DOC_GET_PATIENTS:
+			{
+				if (msg.obj instanceof Doctor) {
+					Doctor doc = (Doctor) msg.obj;
+					PatientDAO patientDb = new PatientDAO();
+					ArrayList<Patient> patients = patientDb.findByDoctor(doc);
+					returned = patients;
+				} else {
+					throw new IllegalArgumentException(
+							"Please provide a Doctor object to get patients");
+				}
+				break;
+			}
+			case PATIENT_GET_PRESCRIPTION:
+			{
+				if (msg.obj instanceof Patient) {
+					Patient pat = (Patient) msg.obj;
+					PrescriptionDAO prescriptionDb = new PrescriptionDAO();
+					ArrayList<Prescription> prescriptions = prescriptionDb.findByPatient(pat);
+					returned = prescriptions;
+				} else {
+					throw new IllegalArgumentException(
+							"Please provide a Patient object to get prescriptions");
 				}
 				break;
 			}
