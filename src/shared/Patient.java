@@ -28,5 +28,8 @@ public class Patient implements Serializable {
 		this.email = email;
 		this.smsEmail = smsEmail;
 		this.for_doctor = doctor;
+		if (this.for_doctor == null
+				|| this.for_doctor.id == null)
+			throw new IllegalArgumentException("Doctor object is invalid for Patient");
 	}
 }
