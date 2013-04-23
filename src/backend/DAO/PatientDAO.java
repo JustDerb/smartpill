@@ -24,9 +24,9 @@ public class PatientDAO implements SQLDAO<Patient, Integer> {
 		StringBuilder sb = new StringBuilder();
 		sb.append("INSERT INTO ");
 		sb.append(PatientDAO.TABLE);
-		sb.append(" ( `id`,   `name`, `email`, `sms_email` ) ");
+		sb.append(" ( `id`,   `name`, `email`, `sms_email`, `for_doctor` ) ");
 		sb.append(" VALUES ");
-		sb.append(" ( NULL,    ?,      ?,       ?          );");
+		sb.append(" ( NULL,    ?,      ?,       ?,          ?            );");
 
 		PreparedStatement ps = conn.prepareStatement(sb.toString(),
 				Statement.RETURN_GENERATED_KEYS);
@@ -34,6 +34,7 @@ public class PatientDAO implements SQLDAO<Patient, Integer> {
 		ps.setString(1, dao.name);
 		ps.setString(2, dao.email);
 		ps.setString(3, dao.smsEmail);
+		ps.setInt(4, dao.for_doctor.id);
 
 		// Try and add it
 		ps.executeUpdate();
@@ -58,6 +59,7 @@ public class PatientDAO implements SQLDAO<Patient, Integer> {
 		sb.append("name = ?, ");
 		sb.append("email = ?, ");
 		sb.append("sms_email = ? ");
+		sb.append("for_doctor = ? ");
 		sb.append(" WHERE id = ?");
 		
 		PreparedStatement ps = conn.prepareStatement(sb.toString());
@@ -65,7 +67,8 @@ public class PatientDAO implements SQLDAO<Patient, Integer> {
 		ps.setString(1, dao.name);
 		ps.setString(2, dao.email);
 		ps.setString(3, dao.smsEmail);
-		ps.setInt(4, dao.id);
+		ps.setInt(4, dao.for_doctor.id);
+		ps.setInt(5, dao.id);
 
 		// Try and add it
 		ps.execute();
@@ -128,10 +131,13 @@ public class PatientDAO implements SQLDAO<Patient, Integer> {
 
 		// Try and add it
 		ResultSet result = ps.executeQuery();
+		DoctorDAO docDb = new DoctorDAO();
 
 		if (result.next()) {
+			int doctorId = result.getInt("for_doctor");
 			return new Patient(result.getInt("id"), result.getString("name"),
-					result.getString("email"), result.getString("sms_email"));
+					result.getString("email"), result.getString("sms_email"),
+					docDb.findByPrimaryKey(doctorId));
 		} else
 			return null;
 	}
