@@ -7,12 +7,17 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 public class HomePage extends JPanel {
 
@@ -20,6 +25,11 @@ public class HomePage extends JPanel {
 	 * Default serialization
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * The parent of this object.
+	 */
+	private FrontendGUI parent;
 	
 	//different sections of the home page
 	private JPanel existingPatientSection;
@@ -39,8 +49,9 @@ public class HomePage extends JPanel {
 	private JLabel alertsLabel;
 	private Seperator alertsSeperator;
 
-	public HomePage(){
+	public HomePage(FrontendGUI parent){
 		super(new GridBagLayout());
+		this.parent = parent;
 		existingPatientSectionInit();
 		newPatientSectionInit();
 		alertsSectionInit();
@@ -115,8 +126,8 @@ public class HomePage extends JPanel {
 		searchButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				System.out.println("looking for " + searchField.getText());
+				PatientSelectionDialog dialog = new PatientSelectionDialog(parent.getFrame(), true, parent.getPatients(searchField.getText()));
+				dialog.setVisible(true);
 			}
 		});
 	}
@@ -229,13 +240,81 @@ public class HomePage extends JPanel {
 	}
 	
 	
-	public static void main(String[] args){
-		JFrame frame = new JFrame();
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new HomePage(), BorderLayout.CENTER);
-		frame.add(panel);
-		frame.setSize(400, 400);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	private class PatientSelectionDialog extends JDialog {
+		
+		/**
+		 * Default Serialization
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		//gui elements
+		private JList<String> patientsList;
+		private JButton selectButton;
+		private JButton cancelButton;
+		
+		private PatientSelectionDialog(JFrame frame, boolean modal, String[] names){
+			super(frame, modal);
+			JPanel outerPanel = new JPanel(new BorderLayout());
+			JPanel innerPanel = new JPanel(new GridBagLayout());
+			outerPanel.add(innerPanel, BorderLayout.CENTER);
+			
+			patientsList = new JList<String>(names);
+			JScrollPane scroll = new JScrollPane(patientsList);
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.gridwidth = 2;
+			gbc.weightx = 1;
+			gbc.weighty = 1;
+			gbc.fill = GridBagConstraints.BOTH;
+			innerPanel.add(scroll, gbc);
+			
+			selectButton = new JButton("Select");
+			gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 1;
+			gbc.weightx = 0;
+			gbc.weighty = 0;
+			gbc.fill = GridBagConstraints.NONE;
+			innerPanel.add(selectButton, gbc);
+			
+			cancelButton = new JButton("Cancel");
+			gbc = new GridBagConstraints();
+			gbc.gridx = 1;
+			gbc.gridy = 1;
+			gbc.weightx = 0;
+			gbc.weighty = 0;
+			gbc.fill = GridBagConstraints.NONE;
+			innerPanel.add(cancelButton, gbc);
+			
+			selectButton.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					System.out.println(patientsList.getSelectedValue());
+				}
+			});
+			
+			cancelButton.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
+			
+			getContentPane().add(outerPanel);
+			setSize(200, 400);
+			setLocationRelativeTo(frame);
+		}
 	}
+	
+//	
+//	public static void main(String[] args){
+//		JFrame frame = new JFrame();
+//		JPanel panel = new JPanel(new BorderLayout());
+//		panel.add(new HomePage(), BorderLayout.CENTER);
+//		frame.add(panel);
+//		frame.setSize(400, 400);
+//		frame.setVisible(true);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//	}
 }

@@ -1,6 +1,8 @@
 package doctor;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,15 +24,16 @@ public class FrontendGUI {
 	private int state;
 	
 	//gui parts
+	private JFrame frame;
 	private JPanel panel;
 	private LoginPanel loginPanel;
 	private HomePage homePanel;
 	
 	public FrontendGUI(){
 		loginPanel = new LoginPanel(this);
-		homePanel = new HomePage();
+		homePanel = new HomePage(this);
 		
-		JFrame frame = new JFrame();
+		frame = new JFrame();
 		panel = new JPanel(new BorderLayout());
 		panel.add(loginPanel);
 		state = LOGIN;
@@ -55,9 +58,28 @@ public class FrontendGUI {
 		return false;
 	}
 	
+	/**
+	 * Create a new user for the system.
+	 * @param username used to identify the user.
+	 * @param password used to secure the account.
+	 * @param email email account associated with the user.
+	 * @param firstName the user's given name.
+	 * @param lastName the user's surname name.
+	 * @return true if the account was successfully created false if not.
+	 */
 	public boolean verifyNewUser(String username, String password, String email, String firstName, String lastName){
 		//TODO
 		return true;
+	}
+	
+	public String[] getPatients(String regex){
+		//TODO
+		int size = 40;
+		String ret[] = new String[size];
+		for (int i = 0; i < size; i++){
+			ret[i] = "patient" + i;
+		}
+		return ret;
 	}
 	
 	/**
@@ -84,5 +106,13 @@ public class FrontendGUI {
 	 */
 	public int getState(){
 		return state;
+	}
+	
+	public void setPatient(String name){
+		//TODO
+	}
+	
+	public JFrame getFrame(){
+		return frame;
 	}
 }
