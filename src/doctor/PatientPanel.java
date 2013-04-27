@@ -107,8 +107,13 @@ public class PatientPanel extends JPanel{
 		//gui parts
 		private JScrollPane scheduleScrollPane;
 		private JList<String> scheduleList;
+		private FrontendGUI parent;
 		
-		public SchedulePanel(){
+		public SchedulePanel(FrontendGUI parent){
+			this.parent = parent;
+		}
+		
+		public void setPatientInfo(){
 			
 		}
 	}

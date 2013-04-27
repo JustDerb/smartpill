@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -51,7 +53,7 @@ public class FrontendGUI {
 	
 	public FrontendGUI(){
 		try {
-			tcpClient = new TCPUIClient("10.30.10.78", SmartPillDefaults.SERVER_PORT);
+			tcpClient = new TCPUIClient("localhost", SmartPillDefaults.SERVER_PORT);
 			Thread clientThread = new Thread(tcpClient);
 			clientThread.start();
 		} 
@@ -133,14 +135,47 @@ public class FrontendGUI {
 		return false;
 	}
 	
-	public String[] getPatients(String regex){
-		//TODO
-		int size = 40;
-		String ret[] = new String[size];
-		for (int i = 0; i < size; i++){
-			ret[i] = "patient" + i;
+	/**
+	 * Gets all patients belonging to a doctor whose names match the given regex expression.
+	 * @param regex the expression used when determining which patients are to be returned.
+	 * @return A List containing all patients whose name matches the regex expression provided.
+	 */
+	public List<Patient> getPatients(String regex){
+		List<Patient> ret = new ArrayList<Patient>();
+		
+		RetrievalMessage rMessage = new RetrievalMessage(Retrieve.DOC_GET_PATIENTS, doctor);
+		try {
+			tcpClient.sendMessage(rMessage);
+			Object obj = tcpClient.getResponse();
+			if (obj instanceof List<?>){
+				List<?> unknownList = (List<?>) obj;
+				if (unknownList != null && unknownList.size() > 0){
+					//add each patient that is in the unknownList that matches the regex expression to the ret list
+					for (int i = 0; i < unknownList.size(); i++){
+						if (unknownList.get(i) instanceof Patient){
+							Patient temp = (Patient) unknownList.get(i);
+							//regex check
+							if (temp.name.split(regex).length > 1){
+								ret.add(temp);
+							}
+						}
+					}
+				}
+			}
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
 		}
+		
 		return ret;
+		
+		//TODO
+//		int size = 40;
+//		String ret[] = new String[size];
+//		for (int i = 0; i < size; i++){
+//			ret[i] = "patient" + i;
+//		}
+//		return ret;
 	}
 	
 	public Alert[] getAlerts(){
@@ -154,28 +189,6 @@ public class FrontendGUI {
 	}
 	
 	/**
-	 * Switches the panel that is currently in view for the user.
-	 * @param view what view the gui should be showing to the user.
-	 */
-	public void setState(int view){
-		panel.removeAll();
-		if (view == LOGIN){
-			panel.add(loginPanel, BorderLayout.CENTER);
-			state = LOGIN;
-		}
-		else if (view == HOME){
-			panel.add(homePanel, BorderLayout.CENTER);
-			state = HOME;
-		}
-		else if (view == PATIENT){
-			panel.add(patientPanel, BorderLayout.CENTER);
-			state = PATIENT;
-		}
-		panel.revalidate();
-		panel.repaint();
-	}
-	
-	/**
 	 * Gets the current state that the gui is in.
 	 * @return The static int the represents the view that is currently being displayed.
 	 */
@@ -183,8 +196,13 @@ public class FrontendGUI {
 		return state;
 	}
 	
-	public void setPatient(String name){
-		//TODO
+	/**
+	 * Sets the patient that the doctor is currently viewing.
+	 * @param p is the patient that the doctor selected to view.
+	 */
+	public void setPatient(Patient p){
+		patient = p;
+		patientPanel.setPatientInfo(p);
 	}
 	
 	public boolean addPatient(String firstName, String lastName, String email, String smsEmail){
@@ -207,6 +225,28 @@ public class FrontendGUI {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Switches the panel that is currently in view for the user.
+	 * @param view what view the gui should be showing to the user.
+	 */
+	public void setState(int view){
+		panel.removeAll();
+		if (view == LOGIN){
+			panel.add(loginPanel, BorderLayout.CENTER);
+			state = LOGIN;
+		}
+		else if (view == HOME){
+			panel.add(homePanel, BorderLayout.CENTER);
+			state = HOME;
+		}
+		else if (view == PATIENT){
+			panel.add(patientPanel, BorderLayout.CENTER);
+			state = PATIENT;
+		}
+		panel.revalidate();
+		panel.repaint();
 	}
 	
 	/**

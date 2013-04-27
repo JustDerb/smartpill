@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import shared.Alert;
+import shared.Patient;
 
 public class HomePage extends JPanel {
 
@@ -278,17 +279,28 @@ public class HomePage extends JPanel {
 		 */
 		private static final long serialVersionUID = 1L;
 		
+		/**
+		 * List of patients that will be displayed in the popup
+		 */
+		private List<Patient> listOfPatients;
+		
 		//gui elements
 		private JList<String> patientsList;
 		private JButton selectButton;
 		private JButton cancelButton;
 		
-		private PatientSelectionDialog(JFrame frame, boolean modal, String[] names){
+		private PatientSelectionDialog(JFrame frame, boolean modal, List<Patient> patients){
 			super(frame, modal);
+			listOfPatients = patients;
+			
 			JPanel outerPanel = new JPanel(new BorderLayout());
 			JPanel innerPanel = new JPanel(new GridBagLayout());
 			outerPanel.add(innerPanel, BorderLayout.CENTER);
 			
+			String names[] = new String[patients.size()];
+			for (int i = 0; i < patients.size(); i++){
+				names[i] = patients.get(i).name;
+			}
 			patientsList = new JList<String>(names);
 			JScrollPane scroll = new JScrollPane(patientsList);
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -321,8 +333,9 @@ public class HomePage extends JPanel {
 			selectButton.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					System.out.println(patientsList.getSelectedValue());
-					//TODO set the patient
+					int selected = patientsList.getSelectedIndex();
+					//set the selected patient for the overall system
+					parent.setPatient(listOfPatients.get(selected));
 					parent.setState(FrontendGUI.PATIENT);
 					dispose();
 				}
