@@ -174,7 +174,7 @@ public class AlertDAO implements SQLDAO<Alert, Integer> {
 		sb.append("SELECT id FROM ");
 		sb.append(AlertDAO.TABLE);
 		sb.append(" WHERE for_doctor_id = ? ");
-		sb.append(" AND read = 0 ");
+		sb.append(" AND `read` = FALSE ");
 		PreparedStatement ps = conn.prepareStatement(sb.toString());
 		
 		ps.setInt(1, doc.id);
