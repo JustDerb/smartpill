@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -18,6 +19,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import shared.Alert;
 
 public class HomePage extends JPanel {
 
@@ -49,6 +52,7 @@ public class HomePage extends JPanel {
 	private JButton addButton;
 	private JLabel alertsLabel;
 	private Seperator alertsSeperator;
+	private JScrollPane alertsScroll;
 
 	public HomePage(FrontendGUI parent){
 		super(new GridBagLayout());
@@ -245,15 +249,25 @@ public class HomePage extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		alertsSection.add(alertsSeperator, gbc);
 		
+		Alert alerts[] = parent.getAlerts();
+		String toAdd[] = new String[alerts.length];
+		for (int i = 0; i < alerts.length; i++){
+			toAdd[i] = alerts[i].name + " : " + alerts[i].description;
+		}
+		JList<String> jList = new JList<String>(toAdd);
+		JPanel alertsPanel = new JPanel(new BorderLayout());
+		alertsPanel.add(jList, BorderLayout.CENTER);
+		alertsScroll = new JScrollPane(alertsPanel);
+		
 		//TODO get rid of spacer and replace with alerts panel
-		JPanel spacer = new JPanel();
+//		JPanel spacer = new JPanel();
 //		spacer.setBorder(BorderFactory.createLineBorder(Color.GREEN));
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		gbc.weighty = 1;
 		gbc.fill = GridBagConstraints.BOTH;
-		alertsSection.add(spacer, gbc);
+		alertsSection.add(alertsScroll, gbc);
 	}
 	
 	

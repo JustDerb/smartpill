@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import shared.Alert;
+import shared.Alert.AlertType;
 import shared.DatabaseControl;
 import shared.Doctor;
 import shared.Patient;
@@ -49,7 +51,7 @@ public class FrontendGUI {
 	
 	public FrontendGUI(){
 		try {
-			tcpClient = new TCPUIClient("10.24.87.53", SmartPillDefaults.SERVER_PORT);
+			tcpClient = new TCPUIClient("10.30.10.78", SmartPillDefaults.SERVER_PORT);
 			Thread clientThread = new Thread(tcpClient);
 			clientThread.start();
 		} 
@@ -141,6 +143,16 @@ public class FrontendGUI {
 		return ret;
 	}
 	
+	public Alert[] getAlerts(){
+		//TODO
+		int size = 3;
+		Alert ret[] = new Alert[size];
+		for (int i = 0; i < size; i++){
+			ret[i] = new Alert("Patient" + i, "Not replying", AlertType.PATIENT, doctor);
+		}
+		return ret;
+	}
+	
 	/**
 	 * Switches the panel that is currently in view for the user.
 	 * @param view what view the gui should be showing to the user.
@@ -176,14 +188,14 @@ public class FrontendGUI {
 	}
 	
 	public boolean addPatient(String firstName, String lastName, String email, String smsEmail){
-		//TODO add field for smsEmail
-		Patient p = new Patient(firstName + " " + lastName, email, smsEmail);
+		Patient p = new Patient(firstName + " " + lastName, email, smsEmail, doctor);
 		DatabaseControl dbControl = new DatabaseControl(DatabaseControl.DbType.CREATE, p);
 		try {
 			tcpClient.sendMessage(dbControl);
 			Object obj = tcpClient.getResponse();
 			if (obj instanceof DatabaseControl){
 				patient = (Patient) ((DatabaseControl) obj).object;
+				patientPanel.setPatientInfo(patient);
 				return true;
 			}
 			else{
