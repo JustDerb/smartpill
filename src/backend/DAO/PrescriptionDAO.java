@@ -48,13 +48,13 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		} else
 			throw new SQLException("Could not retrieve updated values");
 		
-		// Create any Date/Times
-		PrescriptionDateTimeDAO pdtDAO = new PrescriptionDateTimeDAO();
-		for (PrescriptionDateTime pdt : dao.dateTimes)
-		{
-			pdt.forPrescription = dao.id;
-			pdtDAO.insert(pdt);
-		}
+//		// Create any Date/Times
+//		PrescriptionDateTimeDAO pdtDAO = new PrescriptionDateTimeDAO();
+//		for (PrescriptionDateTime pdt : dao.dateTimes)
+//		{
+//			pdt.forPrescription = dao.id;
+//			pdtDAO.insert(pdt);
+//		}
 		
 		return dao;
 	}
@@ -85,12 +85,12 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		ps.execute();
 		
 		// TODO: Remove or create any Date/Times
-		// Update any Date/Times
-		PrescriptionDateTimeDAO pdtDAO = new PrescriptionDateTimeDAO();
-		for (PrescriptionDateTime pdt : dao.dateTimes)
-		{
-			pdtDAO.update(pdt);
-		}
+//		// Update any Date/Times
+//		PrescriptionDateTimeDAO pdtDAO = new PrescriptionDateTimeDAO();
+//		for (PrescriptionDateTime pdt : dao.dateTimes)
+//		{
+//			pdtDAO.update(pdt);
+//		}
 
 		return ps.getUpdateCount() > 0;
 	}

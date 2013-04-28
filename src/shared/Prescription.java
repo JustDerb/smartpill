@@ -20,7 +20,7 @@ public class Prescription implements Serializable {
 
 	public String dosage;
 
-	public List<PrescriptionDateTime> dateTimes;
+	//public List<PrescriptionDateTime> dateTimes;
 
 	public Prescription(String name, String description, String picturePath,
 			String dosage, List<PrescriptionDateTime> dateTimes) {
@@ -34,6 +34,6 @@ public class Prescription implements Serializable {
 		this.message = description;
 		this.picturePath = picturePath;
 		this.dosage = dosage;
-		this.dateTimes = dateTimes;
+		//this.dateTimes = dateTimes;
 	}
 }
