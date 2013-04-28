@@ -25,9 +25,9 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		StringBuilder sb = new StringBuilder();
 		sb.append("INSERT INTO ");
 		sb.append(PrescriptionDAO.TABLE);
-		sb.append(" ( `id`,   `name`, `message`, `picture_path`, `dosage` ) ");
+		sb.append(" ( `id`,   `name`, `message`, `picture_path`, `dosage`, `for_patient_id` ) ");
 		sb.append(" VALUES ");
-		sb.append(" ( NULL,    ?,      ?,         ?,              ?       );");
+		sb.append(" ( NULL,    ?,      ?,         ?,              ?,        ?               );");
 
 		PreparedStatement ps = conn.prepareStatement(sb.toString(),
 				Statement.RETURN_GENERATED_KEYS);
@@ -36,7 +36,7 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		ps.setString(2, dao.message);
 		ps.setString(3, dao.picturePath);
 		ps.setString(4, dao.dosage);
-		ps.setInt(3, dao.id);
+		ps.setInt(5, dao.for_patient.id);
 
 		// Try and add it
 		ps.executeUpdate();
@@ -71,6 +71,7 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		sb.append("message = ?, ");
 		sb.append("picture_path = ?, ");
 		sb.append("dosage = ? ");
+		sb.append("for_patient_id = ? ");
 		sb.append(" WHERE id = ?");
 
 		PreparedStatement ps = conn.prepareStatement(sb.toString());
@@ -79,7 +80,8 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		ps.setString(2, dao.message);
 		ps.setString(3, dao.picturePath);
 		ps.setString(4, dao.dosage);
-		ps.setInt(5, dao.id);
+		ps.setInt(5, dao.for_patient.id);
+		ps.setInt(6, dao.id);
 
 		// Try and add it
 		ps.execute();
@@ -174,13 +176,17 @@ public class PrescriptionDAO implements SQLDAO<Prescription, Integer> {
 		ResultSet result = ps.executeQuery();
 
 		if (result.next()) {
+			Integer patientId = result.getInt("for_patient_id");
+			PatientDAO pDb = new PatientDAO();
+			Patient p = pDb.findByPrimaryKey(patientId);
 			Integer prescriptionId = result.getInt("id");
 			return new Prescription(prescriptionId,
 					result.getString("name"),
 					result.getString("message"),
 					result.getString("picture_path"),
 					result.getString("dosage"),
-					grabTimes(prescriptionId));
+					grabTimes(prescriptionId),
+					p);
 		} else
 			return null;
 	}

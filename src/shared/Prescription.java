@@ -20,20 +20,26 @@ public class Prescription implements Serializable {
 
 	public String dosage;
 
-	//public List<PrescriptionDateTime> dateTimes;
+	public Patient for_patient;
+
+	// public List<PrescriptionDateTime> dateTimes;
 
 	public Prescription(String name, String description, String picturePath,
-			String dosage, List<PrescriptionDateTime> dateTimes) {
-		this(null, name, description, picturePath, dosage, dateTimes);
+			String dosage, List<PrescriptionDateTime> dateTimes,
+			Patient for_patient) {
+		this(null, name, description, picturePath, dosage, dateTimes,
+				for_patient);
 	}
 
 	public Prescription(Integer id, String name, String description,
-			String picturePath, String dosage, List<PrescriptionDateTime> dateTimes) {
+			String picturePath, String dosage,
+			List<PrescriptionDateTime> dateTimes, Patient for_patient) {
 		this.id = id;
 		this.name = name;
 		this.message = description;
 		this.picturePath = picturePath;
 		this.dosage = dosage;
-		//this.dateTimes = dateTimes;
+		this.for_patient = for_patient;
+		// this.dateTimes = dateTimes;
 	}
 }
