@@ -1,17 +1,15 @@
 package doctor;
 
 import java.awt.BorderLayout;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -54,6 +52,8 @@ public class HomePage extends JPanel {
 	private JLabel alertsLabel;
 	private Seperator alertsSeperator;
 	private JScrollPane alertsScroll;
+	private JList<Alert> alertsList;
+	private JButton alertsRemoveButton;
 
 	public HomePage(FrontendGUI parent){
 		super(new GridBagLayout());
@@ -250,25 +250,48 @@ public class HomePage extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		alertsSection.add(alertsSeperator, gbc);
 		
-		Alert alerts[] = parent.getAlerts();
-		String toAdd[] = new String[alerts.length];
-		for (int i = 0; i < alerts.length; i++){
-			toAdd[i] = alerts[i].name + " : " + alerts[i].description;
+		List<Alert> listOfAlerts = parent.getAlerts();
+		DefaultListModel<Alert> model = new DefaultListModel<Alert>();
+		for (Alert a: listOfAlerts){
+			model.addElement(a);
 		}
-		JList<String> jList = new JList<String>(toAdd);
+		alertsList = new JList<Alert>(model);
 		JPanel alertsPanel = new JPanel(new BorderLayout());
-		alertsPanel.add(jList, BorderLayout.CENTER);
+		alertsPanel.add(alertsList, BorderLayout.CENTER);
 		alertsScroll = new JScrollPane(alertsPanel);
 		
-		//TODO get rid of spacer and replace with alerts panel
-//		JPanel spacer = new JPanel();
-//		spacer.setBorder(BorderFactory.createLineBorder(Color.GREEN));
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		gbc.weighty = 1;
+		gbc.weightx = 1;
 		gbc.fill = GridBagConstraints.BOTH;
 		alertsSection.add(alertsScroll, gbc);
+		
+		alertsRemoveButton = new JButton("Remove");
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		gbc.weighty = 0;
+		gbc.weightx = 0;
+		gbc.fill = GridBagConstraints.NONE;
+		alertsSection.add(alertsRemoveButton, gbc);
+		
+		alertsRemoveButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				if (!alertsList.isSelectionEmpty()){
+					boolean marked = parent.markAsRead(alertsList.getSelectedValue());
+					//remove it from the JList if it has been marked as read
+					if (marked){
+						int index = alertsList.getSelectedIndex();
+						DefaultListModel<Alert> model = (DefaultListModel<Alert>) alertsList.getModel();
+						model.removeElementAt(index);
+					}
+					revalidate();
+					repaint();
+				}
+			}
+		});
 	}
 	
 	
@@ -333,11 +356,13 @@ public class HomePage extends JPanel {
 			selectButton.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					int selected = patientsList.getSelectedIndex();
-					//set the selected patient for the overall system
-					parent.setPatient(listOfPatients.get(selected));
-					parent.setState(FrontendGUI.PATIENT);
-					dispose();
+					if (!patientsList.isSelectionEmpty()){
+						int selected = patientsList.getSelectedIndex();
+						//set the selected patient for the overall system
+						parent.setPatient(listOfPatients.get(selected));
+						parent.setState(FrontendGUI.PATIENT);
+						dispose();
+					}
 				}
 			});
 			
@@ -354,14 +379,4 @@ public class HomePage extends JPanel {
 		}
 	}
 	
-//	
-//	public static void main(String[] args){
-//		JFrame frame = new JFrame();
-//		JPanel panel = new JPanel(new BorderLayout());
-//		panel.add(new HomePage(), BorderLayout.CENTER);
-//		frame.add(panel);
-//		frame.setSize(400, 400);
-//		frame.setVisible(true);
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//	}
 }

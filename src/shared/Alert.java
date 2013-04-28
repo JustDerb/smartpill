@@ -50,4 +50,9 @@ public class Alert implements Serializable {
 		this.read = read;
 		this.forDoctor = forDoctor;
 	}
+	
+	@Override
+	public String toString() {
+		return date + "   " + name + "   " + description;
+	}
 }

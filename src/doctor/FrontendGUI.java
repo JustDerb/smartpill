@@ -4,15 +4,12 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import shared.Alert;
-import shared.Alert.AlertType;
 import shared.DatabaseControl;
 import shared.Doctor;
 import shared.Patient;
@@ -63,9 +60,10 @@ public class FrontendGUI {
 			System.exit(0);
 			
 		}
+		
 		loginPanel = new LoginPanel(this);
-		homePanel = new HomePage(this);
-		patientPanel = new PatientPanel(this);
+//		homePanel = new HomePage(this);
+//		patientPanel = new PatientPanel(this);
 		
 		frame = new JFrame();
 		panel = new JPanel(new BorderLayout());
@@ -73,7 +71,7 @@ public class FrontendGUI {
 		state = LOGIN;
 		frame.add(panel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(400, 400);
+		frame.setSize(400, 600);
 		frame.setVisible(true);
 		
 	}
@@ -168,22 +166,70 @@ public class FrontendGUI {
 		}
 		
 		return ret;
-		
-		//TODO
-//		int size = 40;
-//		String ret[] = new String[size];
-//		for (int i = 0; i < size; i++){
-//			ret[i] = "patient" + i;
-//		}
-//		return ret;
 	}
 	
-	public Alert[] getAlerts(){
-		//TODO
-		int size = 3;
-		Alert ret[] = new Alert[size];
-		for (int i = 0; i < size; i++){
-			ret[i] = new Alert("Patient" + i, "Not replying", AlertType.PATIENT, doctor);
+	public List<Alert> getAlerts(){
+//		//test code for adding alerts
+//		Alert a = new Alert("Test", "Testing alert adding 4", AlertType.PATIENT, doctor);
+//		DatabaseControl dbControl = new DatabaseControl(DatabaseControl.DbType.CREATE, a);
+//		try {
+//			tcpClient.sendMessage(dbControl);
+//			Object obj = tcpClient.getResponse();
+//			if (obj instanceof DatabaseControl){
+//				Alert alert = (Alert) ((DatabaseControl) obj).object;
+//			}
+//		} 
+//		catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		
+		
+		List<Alert> ret = new ArrayList<Alert>();
+		
+		RetrievalMessage rMessage = new RetrievalMessage(Retrieve.DOC_GET_ALERTS, doctor);
+		try {
+			tcpClient.sendMessage(rMessage);
+			Object obj = tcpClient.getResponse();
+			if (obj instanceof List<?>){
+				List<?> unknownList = (List<?>) obj;
+				if (unknownList != null && unknownList.size() > 0){
+					//add all parts of unknownList that are Alerts to ret, they should be filtered for read and unread in db class
+					for (int i = 0; i < unknownList.size(); i++){
+						if (unknownList.get(i) instanceof Alert){
+							ret.add((Alert) unknownList.get(i));
+						}
+					}
+					
+				}
+			}
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Marks an Alert as read in the database as of right now it is just being deleted rather than being marked as read though there 
+	 * is no difference between the two from the GUI point of view.
+	 * @param alert to be marked as read.
+	 * @return Returns true if the Alert was properly marked as read and false if not.
+	 */
+	public boolean markAsRead(Alert alert){
+		boolean ret = false;
+		//deletes the Alert form the database
+		DatabaseControl dbControl = new DatabaseControl(DatabaseControl.DbType.DELETE, alert);
+		try {
+			tcpClient.sendMessage(dbControl);
+			Object obj = tcpClient.getResponse();
+			if (obj instanceof DatabaseControl){
+				//this will be true if it was removed
+				ret = (Boolean) ((DatabaseControl) obj).object;
+			}
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
 		}
 		return ret;
 	}
@@ -238,10 +284,16 @@ public class FrontendGUI {
 			state = LOGIN;
 		}
 		else if (view == HOME){
+			if (homePanel == null){
+				homePanel = new HomePage(this);
+			}
 			panel.add(homePanel, BorderLayout.CENTER);
 			state = HOME;
 		}
 		else if (view == PATIENT){
+			if (patientPanel == null){
+				patientPanel = new PatientPanel(this);
+			}
 			panel.add(patientPanel, BorderLayout.CENTER);
 			state = PATIENT;
 		}
