@@ -2,7 +2,10 @@ package doctor;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -13,6 +16,9 @@ import shared.Alert;
 import shared.DatabaseControl;
 import shared.Doctor;
 import shared.Patient;
+import shared.PillMessage;
+import shared.Prescription;
+import shared.PrescriptionDateTime;
 import shared.RetrievalMessage;
 import shared.RetrievalMessage.Retrieve;
 import shared.SmartPillDefaults;
@@ -234,6 +240,52 @@ public class FrontendGUI {
 		return ret;
 	}
 	
+	public boolean addPrescription(String prescriptionName, String link, int refillPeriod, String dosage, 
+			String message, List<Pair<Integer, Integer>> times){
+		
+		Prescription pForAdding = null;
+		boolean ret = true;
+		Prescription p = new Prescription(prescriptionName, message, link, dosage, null, patient);
+		//add the prescription for this patient to the database
+		DatabaseControl dbControl = new DatabaseControl(DatabaseControl.DbType.CREATE, p);
+		try {
+			tcpClient.sendMessage(dbControl);
+			Object obj = tcpClient.getResponse();
+			if (obj instanceof DatabaseControl){
+				pForAdding = (Prescription) ((DatabaseControl) obj).object;
+			}
+			else{
+				return false;
+			}
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+
+		//add each time that the prescription is suppose to be taken to the db
+		Calendar calendar = Calendar.getInstance();
+		for (Pair<Integer, Integer> pair: times){
+			calendar.set(0, 0, 0, pair.getLeft(), pair.getRight(), 0);
+			Time t = new Time(calendar.getTime().getTime());
+			PrescriptionDateTime pdt = new PrescriptionDateTime(pForAdding, t);
+			
+			dbControl = new DatabaseControl(DatabaseControl.DbType.CREATE, pdt);
+			try {
+				tcpClient.sendMessage(dbControl);
+				Object obj = tcpClient.getResponse();
+				if (!(obj instanceof DatabaseControl)){
+					ret = false;
+				}
+			} 
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return ret;
+	}
+	
 	/**
 	 * Gets the current state that the gui is in.
 	 * @return The static int the represents the view that is currently being displayed.
@@ -248,9 +300,20 @@ public class FrontendGUI {
 	 */
 	public void setPatient(Patient p){
 		patient = p;
+		if (patientPanel == null){
+			patientPanel = new PatientPanel(this);
+		}
 		patientPanel.setPatientInfo(p);
 	}
 	
+	/**
+	 * Adds a new patient that is associated with the currently active Doctor.
+	 * @param firstName is the first name of the patient.
+	 * @param lastName is the last name of the patient.
+	 * @param email is the email of the patient.
+	 * @param smsEmail is the sms email of the patient that can be used to receive text messages.
+	 * @return True if the patient was added successfully false if not.
+	 */
 	public boolean addPatient(String firstName, String lastName, String email, String smsEmail){
 		Patient p = new Patient(firstName + " " + lastName, email, smsEmail, doctor);
 		DatabaseControl dbControl = new DatabaseControl(DatabaseControl.DbType.CREATE, p);
@@ -259,6 +322,9 @@ public class FrontendGUI {
 			Object obj = tcpClient.getResponse();
 			if (obj instanceof DatabaseControl){
 				patient = (Patient) ((DatabaseControl) obj).object;
+				if (patientPanel == null){
+					patientPanel = new PatientPanel(this);
+				}
 				patientPanel.setPatientInfo(patient);
 				return true;
 			}

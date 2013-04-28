@@ -1,7 +1,5 @@
 package doctor;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -12,10 +10,10 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
 
 public class PrescriptionPanel extends JPanel {
 	
@@ -24,12 +22,18 @@ public class PrescriptionPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * The parent of this object.
+	 */
+	private FrontendGUI parent;
+	
 	//gui elements
 	private JButton submitButton;
 	private SchedulerPanel schedulerPanel;
 	
-	public PrescriptionPanel(){
+	public PrescriptionPanel(FrontendGUI parent){
 		super(new GridBagLayout());
+		this.parent = parent;
 		
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -101,13 +105,12 @@ public class PrescriptionPanel extends JPanel {
 				String message = messageField.getText();
 				List<Pair<Integer, Integer>> times = schedulerPanel.getTimes();
 				
-				System.out.println("prescription = " + prescription);
-				System.out.println("link = " + link);
-				System.out.println("refill period = " + refillPeriod);
-				System.out.println("dosage = " + dosage);
-				System.out.println("message = " + message);
-				for (Pair<Integer, Integer> pair: times){
-					System.out.println(pair.getLeft() + ":" + pair.getRight());
+				boolean result = PrescriptionPanel.this.parent.addPrescription(prescription, link, refillPeriod, dosage, message, times);
+				if (result){
+					JOptionPane.showMessageDialog(PrescriptionPanel.this, "The prescription was added successfully!");
+				}
+				else{
+					JOptionPane.showMessageDialog(PrescriptionPanel.this, "The prescription was not added successfully!");
 				}
 			}
 			
@@ -218,7 +221,6 @@ public class PrescriptionPanel extends JPanel {
 		private Integer minutesArr[];
 		
 		//gui elements
-		private JPanel scheduleHeaderPanel;
 		private JLabel scheduleLabel;
 		private Seperator scheduleSeperator;
 		private JLabel chooseTimeLabel;
@@ -358,16 +360,6 @@ public class PrescriptionPanel extends JPanel {
 			
 			return times;
 		}
-	}
-	
-	public static void main(String[] args){
-		JFrame frame = new JFrame();
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new PrescriptionPanel(), BorderLayout.CENTER);
-		frame.add(panel);
-		frame.setVisible(true);
-		frame.setSize(400, 400);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 }

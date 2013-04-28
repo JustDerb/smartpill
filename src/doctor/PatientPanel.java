@@ -47,7 +47,7 @@ public class PatientPanel extends JPanel{
 		add(headerPanel, gbc);
 		
 		tabPane = new JTabbedPane();
-		presPanel = new PrescriptionPanel();
+		presPanel = new PrescriptionPanel(parent);
 		tabPane.addTab("PrescriptionPanel", presPanel);
 		scrollPane = new JScrollPane(tabPane);
 		gbc.gridx = 0;
