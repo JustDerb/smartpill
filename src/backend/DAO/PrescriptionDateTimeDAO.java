@@ -39,7 +39,6 @@ public class PrescriptionDateTimeDAO implements
 
 			ps.setInt(1, dao.forPrescription);
 			ps.setTime(2, dao.timeOfDay);
-			ps.setInt(3, dao.id);
 
 			// Try and add it
 			ps.executeUpdate();
@@ -72,7 +71,7 @@ public class PrescriptionDateTimeDAO implements
 
 			ps.setInt(1, dao.forPrescription);
 			ps.setTime(2, dao.timeOfDay);
-			ps.setInt(4, dao.id);
+			ps.setInt(3, dao.id);
 
 			// Try and add it
 			ps.execute();
