@@ -18,16 +18,19 @@ import shared.Doctor;
 public class DoctorDAO implements SQLDAO<Doctor, Integer> {
 
 	private static final String TABLE = "doctors";
-	
+
 	public void eraseTable() throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("TRUNCATE TABLE ");
+			sb.append(DoctorDAO.TABLE);
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("TRUNCATE TABLE ");
-		sb.append(DoctorDAO.TABLE);
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
-		
-		ps.execute();
+			ps.execute();
+		} finally {
+			conn.close();
+		}
 	}
 
 	private static String getHash(String password, String salt) {
@@ -58,30 +61,33 @@ public class DoctorDAO implements SQLDAO<Doctor, Integer> {
 
 	public Doctor insert(Doctor dao, String password) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			// Generate our hash
+			SecureRandom random = new SecureRandom();
+			String salt = new BigInteger(130, random).toString(32);
+			String hash = DoctorDAO.getHash(password, salt);
 
-		// Generate our hash
-		SecureRandom random = new SecureRandom();
-		String salt = new BigInteger(130, random).toString(32);
-		String hash = DoctorDAO.getHash(password, salt);
+			StringBuilder sb = new StringBuilder();
+			sb.append("INSERT INTO ");
+			sb.append(DoctorDAO.TABLE);
+			sb.append(" ( id,   username, password, salt, name, email ) ");
+			sb.append(" VALUES ");
+			sb.append(" ( NULL, ?,        ?,        ?,    ?,    ?     );");
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("INSERT INTO ");
-		sb.append(DoctorDAO.TABLE);
-		sb.append(" ( id,   username, password, salt, name, email ) ");
-		sb.append(" VALUES ");
-		sb.append(" ( NULL, ?,        ?,        ?,    ?,    ?     );");
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
+			ps.setString(1, dao.username);
+			ps.setString(2, hash);
+			ps.setString(3, salt);
+			ps.setString(4, dao.name);
+			ps.setString(5, dao.email);
 
-		ps.setString(1, dao.username);
-		ps.setString(2, hash);
-		ps.setString(3, salt);
-		ps.setString(4, dao.name);
-		ps.setString(5, dao.email);
+			// Try and add it
+			ps.execute();
 
-		// Try and add it
-		ps.execute();
-
-		return findByUsername(dao.username);
+			return findByUsername(dao.username);
+		} finally {
+			conn.close();
+		}
 	}
 
 	public boolean isCorrectLogin(String username, String password)
@@ -102,126 +108,133 @@ public class DoctorDAO implements SQLDAO<Doctor, Integer> {
 	@Override
 	public boolean update(Doctor dao) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE ");
+			sb.append(DoctorDAO.TABLE);
+			sb.append(" SET ");
+			sb.append("username = ?, ");
+			sb.append("password = ?, ");
+			sb.append("salt = ?, ");
+			sb.append("name = ?, ");
+			sb.append("email = ? ");
+			sb.append(" WHERE id = ?");
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("UPDATE ");
-		sb.append(DoctorDAO.TABLE);
-		sb.append(" SET ");
-		sb.append("username = ?, ");
-		sb.append("password = ?, ");
-		sb.append("salt = ?, ");
-		sb.append("name = ?, ");
-		sb.append("email = ? ");
-		sb.append(" WHERE id = ?");
-		
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		ps.setString(1, dao.username);
-		ps.setString(2, dao.password);
-		ps.setString(3, dao.salt);
-		ps.setString(4, dao.name);
-		ps.setString(5, dao.email);
-		ps.setInt(6, dao.id);
+			ps.setString(1, dao.username);
+			ps.setString(2, dao.password);
+			ps.setString(3, dao.salt);
+			ps.setString(4, dao.name);
+			ps.setString(5, dao.email);
+			ps.setInt(6, dao.id);
 
-		// Try and add it
-		ps.execute();
+			// Try and add it
+			ps.execute();
 
-		return ps.getUpdateCount() > 0;
+			return ps.getUpdateCount() > 0;
+		} finally {
+			conn.close();
+		}
 	}
 
 	@Override
 	public boolean delete(Doctor dao) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("DELETE FROM ");
+			sb.append(DoctorDAO.TABLE);
+			sb.append(" WHERE id = ?");
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("DELETE FROM ");
-		sb.append(DoctorDAO.TABLE);
-		sb.append(" WHERE id = ?");
-		
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		ps.setInt(1, dao.id);
+			ps.setInt(1, dao.id);
 
-		// Try and add it
-		ps.execute();
+			// Try and add it
+			ps.execute();
 
-		return ps.getUpdateCount() > 0;
+			return ps.getUpdateCount() > 0;
+		} finally {
+			conn.close();
+		}
 	}
 
 	@Override
 	public ArrayList<Doctor> findAll() throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT id FROM ");
+			sb.append(DoctorDAO.TABLE);
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT id FROM ");
-		sb.append(DoctorDAO.TABLE);
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
-		
-		// Try and add it
-		ResultSet result = ps.executeQuery();
-		
-		ArrayList<Doctor> list = new ArrayList<Doctor>();
-		
-		while (result.next()) {
-			list.add(findByPrimaryKey(result.getInt("id")));
+			// Try and add it
+			ResultSet result = ps.executeQuery();
+
+			ArrayList<Doctor> list = new ArrayList<Doctor>();
+
+			while (result.next()) {
+				list.add(findByPrimaryKey(result.getInt("id")));
+			}
+
+			return list;
+		} finally {
+			conn.close();
 		}
-
-		return list;
 	}
 
 	@Override
 	public Doctor findByPrimaryKey(Integer key) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM ");
+			sb.append(DoctorDAO.TABLE);
+			sb.append(" WHERE id = ?");
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT * FROM ");
-		sb.append(DoctorDAO.TABLE);
-		sb.append(" WHERE id = ?");
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
-		
-		ps.setInt(1, key);
-		
-		// Try and add it
-		ResultSet result = ps.executeQuery();
+			ps.setInt(1, key);
 
-		if (result.next()) {
-			return new Doctor(
-					result.getInt("id"),
-					result.getString("username"),
-					result.getString("name"),
-					result.getString("email"),
-					result.getString("salt"),
-					result.getString("password"));
+			// Try and add it
+			ResultSet result = ps.executeQuery();
+
+			if (result.next()) {
+				return new Doctor(result.getInt("id"),
+						result.getString("username"), result.getString("name"),
+						result.getString("email"), result.getString("salt"),
+						result.getString("password"));
+			} else
+				return null;
+		} finally {
+			conn.close();
 		}
-		else
-			return null;
 	}
 
 	public Doctor findByUsername(String username) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM ");
+			sb.append(DoctorDAO.TABLE);
+			sb.append(" WHERE username = ?");
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT * FROM ");
-		sb.append(DoctorDAO.TABLE);
-		sb.append(" WHERE username = ?");
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
-		
-		ps.setString(1, username);
-		
-		// Try and add it
-		ResultSet result = ps.executeQuery();
+			ps.setString(1, username);
 
-		if (result.next()) {
-			return new Doctor(
-					result.getInt("id"),
-					result.getString("username"),
-					result.getString("name"),
-					result.getString("email"),
-					result.getString("salt"),
-					result.getString("password"));
+			// Try and add it
+			ResultSet result = ps.executeQuery();
+
+			if (result.next()) {
+				return new Doctor(result.getInt("id"),
+						result.getString("username"), result.getString("name"),
+						result.getString("email"), result.getString("salt"),
+						result.getString("password"));
+			} else
+				return null;
+		} finally {
+			conn.close();
 		}
-		else
-			return null;
 	}
 
 }

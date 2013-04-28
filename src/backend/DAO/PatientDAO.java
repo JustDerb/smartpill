@@ -20,149 +20,167 @@ public class PatientDAO implements SQLDAO<Patient, Integer> {
 	@Override
 	public Patient insert(Patient dao) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("INSERT INTO ");
+			sb.append(PatientDAO.TABLE);
+			sb.append(" ( `id`,   `name`, `email`, `sms_email`, `for_doctor` ) ");
+			sb.append(" VALUES ");
+			sb.append(" ( NULL,    ?,      ?,       ?,          ?            );");
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("INSERT INTO ");
-		sb.append(PatientDAO.TABLE);
-		sb.append(" ( `id`,   `name`, `email`, `sms_email`, `for_doctor` ) ");
-		sb.append(" VALUES ");
-		sb.append(" ( NULL,    ?,      ?,       ?,          ?            );");
+			PreparedStatement ps = conn.prepareStatement(sb.toString(),
+					Statement.RETURN_GENERATED_KEYS);
 
-		PreparedStatement ps = conn.prepareStatement(sb.toString(),
-				Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, dao.name);
+			ps.setString(2, dao.email);
+			ps.setString(3, dao.smsEmail);
+			ps.setInt(4, dao.for_doctor.id);
 
-		ps.setString(1, dao.name);
-		ps.setString(2, dao.email);
-		ps.setString(3, dao.smsEmail);
-		ps.setInt(4, dao.for_doctor.id);
+			// Try and add it
+			ps.executeUpdate();
 
-		// Try and add it
-		ps.executeUpdate();
-
-		ResultSet rs = ps.getGeneratedKeys();
-		if (rs.next()) {
-			// Retrieve the newly created id and pass back the Alert object
-			dao.id = rs.getInt(1);
-			return dao;
-		} else
-			throw new SQLException("Coul not retrieve updated values");
+			ResultSet rs = ps.getGeneratedKeys();
+			if (rs.next()) {
+				// Retrieve the newly created id and pass back the Alert object
+				dao.id = rs.getInt(1);
+				return dao;
+			} else
+				throw new SQLException("Coul not retrieve updated values");
+		} finally {
+			conn.close();
+		}
 	}
 
 	@Override
 	public boolean update(Patient dao) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE ");
+			sb.append(PatientDAO.TABLE);
+			sb.append(" SET ");
+			sb.append("name = ?, ");
+			sb.append("email = ?, ");
+			sb.append("sms_email = ? ");
+			sb.append("for_doctor = ? ");
+			sb.append(" WHERE id = ?");
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("UPDATE ");
-		sb.append(PatientDAO.TABLE);
-		sb.append(" SET ");
-		sb.append("name = ?, ");
-		sb.append("email = ?, ");
-		sb.append("sms_email = ? ");
-		sb.append("for_doctor = ? ");
-		sb.append(" WHERE id = ?");
-		
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		ps.setString(1, dao.name);
-		ps.setString(2, dao.email);
-		ps.setString(3, dao.smsEmail);
-		ps.setInt(4, dao.for_doctor.id);
-		ps.setInt(5, dao.id);
+			ps.setString(1, dao.name);
+			ps.setString(2, dao.email);
+			ps.setString(3, dao.smsEmail);
+			ps.setInt(4, dao.for_doctor.id);
+			ps.setInt(5, dao.id);
 
-		// Try and add it
-		ps.execute();
+			// Try and add it
+			ps.execute();
 
-		return ps.getUpdateCount() > 0;
+			return ps.getUpdateCount() > 0;
+		} finally {
+			conn.close();
+		}
 	}
 
 	@Override
 	public boolean delete(Patient dao) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("DELETE FROM ");
+			sb.append(PatientDAO.TABLE);
+			sb.append(" WHERE id = ?");
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("DELETE FROM ");
-		sb.append(PatientDAO.TABLE);
-		sb.append(" WHERE id = ?");
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
+			ps.setInt(1, dao.id);
 
-		ps.setInt(1, dao.id);
+			// Try and add it
+			ps.execute();
 
-		// Try and add it
-		ps.execute();
-
-		return ps.getUpdateCount() > 0;
-
+			return ps.getUpdateCount() > 0;
+		} finally {
+			conn.close();
+		}
 	}
 
 	@Override
 	public ArrayList<Patient> findAll() throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT id FROM ");
+			sb.append(PatientDAO.TABLE);
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT id FROM ");
-		sb.append(PatientDAO.TABLE);
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
+			// Try and add it
+			ResultSet result = ps.executeQuery();
 
-		// Try and add it
-		ResultSet result = ps.executeQuery();
+			ArrayList<Patient> list = new ArrayList<Patient>();
 
-		ArrayList<Patient> list = new ArrayList<Patient>();
+			while (result.next()) {
+				list.add(findByPrimaryKey(result.getInt("id")));
+			}
 
-		while (result.next()) {
-			list.add(findByPrimaryKey(result.getInt("id")));
+			return list;
+		} finally {
+			conn.close();
 		}
-
-		return list;
 	}
-	
+
 	public ArrayList<Patient> findByDoctor(Doctor doc) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT id FROM ");
+			sb.append(PatientDAO.TABLE);
+			sb.append(" WHERE for_doctor = ? ");
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT id FROM ");
-		sb.append(PatientDAO.TABLE);
-		sb.append(" WHERE for_doctor = ? ");
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
-		
-		ps.setInt(1, doc.id);
+			ps.setInt(1, doc.id);
 
-		// Try and add it
-		ResultSet result = ps.executeQuery();
+			// Try and add it
+			ResultSet result = ps.executeQuery();
 
-		ArrayList<Patient> list = new ArrayList<Patient>();
+			ArrayList<Patient> list = new ArrayList<Patient>();
 
-		while (result.next()) {
-			list.add(findByPrimaryKey(result.getInt("id")));
+			while (result.next()) {
+				list.add(findByPrimaryKey(result.getInt("id")));
+			}
+
+			return list;
+		} finally {
+			conn.close();
 		}
-
-		return list;
 	}
 
 	@Override
 	public Patient findByPrimaryKey(Integer key) throws SQLException {
 		Connection conn = SQLDatabase.getConnection();
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT * FROM ");
+			sb.append(PatientDAO.TABLE);
+			sb.append(" WHERE id = ?");
+			PreparedStatement ps = conn.prepareStatement(sb.toString());
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT * FROM ");
-		sb.append(PatientDAO.TABLE);
-		sb.append(" WHERE id = ?");
-		PreparedStatement ps = conn.prepareStatement(sb.toString());
+			ps.setInt(1, key);
 
-		ps.setInt(1, key);
+			// Try and add it
+			ResultSet result = ps.executeQuery();
+			DoctorDAO docDb = new DoctorDAO();
 
-		// Try and add it
-		ResultSet result = ps.executeQuery();
-		DoctorDAO docDb = new DoctorDAO();
-
-		if (result.next()) {
-			int doctorId = result.getInt("for_doctor");
-			return new Patient(result.getInt("id"), result.getString("name"),
-					result.getString("email"), result.getString("sms_email"),
-					docDb.findByPrimaryKey(doctorId));
-		} else
-			return null;
+			if (result.next()) {
+				int doctorId = result.getInt("for_doctor");
+				return new Patient(result.getInt("id"),
+						result.getString("name"), result.getString("email"),
+						result.getString("sms_email"),
+						docDb.findByPrimaryKey(doctorId));
+			} else
+				return null;
+		} finally {
+			conn.close();
+		}
 	}
 
 }
