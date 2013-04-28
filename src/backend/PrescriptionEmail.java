@@ -19,6 +19,8 @@ public class PrescriptionEmail implements Serializable {
 	public PrescriptionDateTime forPrescriptionDateTime;
 
 	public Timestamp dateTime;
+	
+	public boolean doctor_alerted;
 
 	public PrescriptionEmail(PrescriptionDateTime forPrescriptionDateTime) {
 		this(forPrescriptionDateTime, false);
@@ -27,16 +29,18 @@ public class PrescriptionEmail implements Serializable {
 	public PrescriptionEmail(PrescriptionDateTime forPrescriptionDateTime,
 			boolean read) {
 		this(null, forPrescriptionDateTime, read, new Timestamp(
-				System.currentTimeMillis()));
+				System.currentTimeMillis()), read);
 	}
 
 	public PrescriptionEmail(Integer id,
 			PrescriptionDateTime forPrescriptionDateTime, boolean read,
-			Timestamp dateTime) {
+			Timestamp dateTime,
+			boolean doctor_alerted) {
 		this.id = id;
 		this.forPrescriptionDateTime = forPrescriptionDateTime;
 		this.read = read;
 		this.dateTime = dateTime;
+		this.doctor_alerted = doctor_alerted;
 	}
 
 }

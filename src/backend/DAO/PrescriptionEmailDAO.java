@@ -27,15 +27,16 @@ public class PrescriptionEmailDAO implements SQLDAO<PrescriptionEmail, Integer> 
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ");
 			sb.append(PrescriptionEmailDAO.TABLE);
-			sb.append(" ( `id`,   `for_prescription_meta`, `read`, `added` ) ");
+			sb.append(" ( `id`,   `for_prescription_meta`, `read`, `added`, `doctor_alerted` ) ");
 			sb.append(" VALUES ");
-			sb.append(" ( NULL,    ?,                       ?,      NULL   );");
+			sb.append(" ( NULL,    ?,                       ?,      NULL,    ?   );");
 
 			PreparedStatement ps = conn.prepareStatement(sb.toString(),
 					Statement.RETURN_GENERATED_KEYS);
 
 			ps.setInt(1, dao.forPrescriptionDateTime.id);
 			ps.setBoolean(2, dao.read);
+			ps.setBoolean(3, dao.doctor_alerted);
 
 			// Try and add it
 			ps.executeUpdate();
@@ -68,6 +69,7 @@ public class PrescriptionEmailDAO implements SQLDAO<PrescriptionEmail, Integer> 
 			sb.append("for_prescription_meta = ?, ");
 			sb.append("read = ?, ");
 			sb.append("added = ? ");
+			sb.append("doctor_alerted = ? ");
 			sb.append(" WHERE id = ?");
 
 			PreparedStatement ps = conn.prepareStatement(sb.toString());
@@ -75,7 +77,8 @@ public class PrescriptionEmailDAO implements SQLDAO<PrescriptionEmail, Integer> 
 			ps.setInt(1, dao.forPrescriptionDateTime.id);
 			ps.setBoolean(2, dao.read);
 			ps.setTimestamp(3, dao.dateTime);
-			ps.setInt(4, dao.id);
+			ps.setBoolean(4, dao.doctor_alerted);
+			ps.setInt(5, dao.id);
 
 			// Try and add it
 			ps.execute();
@@ -153,7 +156,8 @@ public class PrescriptionEmailDAO implements SQLDAO<PrescriptionEmail, Integer> 
 				PrescriptionDateTime pdt = pdtDb.findByPrimaryKey(result
 						.getInt("for_prescription_meta"));
 				return new PrescriptionEmail(result.getInt("id"), pdt,
-						result.getBoolean("read"), result.getTimestamp("added"));
+						result.getBoolean("read"), result.getTimestamp("added"),
+						result.getBoolean("doctor_alerted"));
 			} else
 				return null;
 		} finally {
