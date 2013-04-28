@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import nogit.EmailCreds;
+
 import backend.DAO.AlertDAO;
 import backend.DAO.DoctorDAO;
 
@@ -19,16 +21,15 @@ public class launcher {
 	 * @throws SQLException 
 	 */
 	public static void main(String[] args) throws IOException {
-//		try {
-//			testDoctor();
-//			testAlert();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return;
-//		}
 		TCPServer server = new TCPServer(SmartPillDefaults.SERVER_PORT);
 		Thread serverThread = new Thread(server);
 		serverThread.start();
+		
+		GmailIMAPClient emailClient = new GmailIMAPClient(EmailCreds.USERNAME, EmailCreds.PASSWORD);
+		EmailScheduler scheduler = new EmailScheduler(emailClient);
+		
+		emailClient.start();
+		scheduler.start();
 		
 		System.out.println("Listening...");
 		

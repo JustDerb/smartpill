@@ -3,6 +3,7 @@ package backend;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+import shared.Doctor;
 import shared.PrescriptionDateTime;
 
 public class PrescriptionEmail implements Serializable {
@@ -21,19 +22,21 @@ public class PrescriptionEmail implements Serializable {
 	public Timestamp dateTime;
 	
 	public boolean doctor_alerted;
+	
+	public Doctor for_doctor;
 
-	public PrescriptionEmail(PrescriptionDateTime forPrescriptionDateTime) {
-		this(forPrescriptionDateTime, false);
+	public PrescriptionEmail(PrescriptionDateTime forPrescriptionDateTime, Doctor for_doctor) {
+		this(forPrescriptionDateTime, for_doctor, false);
 	}
 
-	public PrescriptionEmail(PrescriptionDateTime forPrescriptionDateTime,
+	public PrescriptionEmail(PrescriptionDateTime forPrescriptionDateTime, Doctor for_doctor,
 			boolean read) {
-		this(null, forPrescriptionDateTime, read, new Timestamp(
+		this(null, forPrescriptionDateTime, for_doctor, read, new Timestamp(
 				System.currentTimeMillis()), read);
 	}
 
 	public PrescriptionEmail(Integer id,
-			PrescriptionDateTime forPrescriptionDateTime, boolean read,
+			PrescriptionDateTime forPrescriptionDateTime, Doctor for_doctor, boolean read,
 			Timestamp dateTime,
 			boolean doctor_alerted) {
 		this.id = id;
@@ -41,6 +44,7 @@ public class PrescriptionEmail implements Serializable {
 		this.read = read;
 		this.dateTime = dateTime;
 		this.doctor_alerted = doctor_alerted;
+		this.for_doctor = for_doctor;
 	}
 
 }
