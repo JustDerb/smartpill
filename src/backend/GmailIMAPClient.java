@@ -86,13 +86,14 @@ public class GmailIMAPClient {
 			Properties props = System.getProperties();
 			props.setProperty("mail.store.protocol", "imaps");
 			Store store = null;
-			try {
-				Session session = Session.getDefaultInstance(props, null);
-				store = session.getStore("imaps");
-				store.connect("imap.gmail.com", this.username, this.password);
+			while (!this.shouldStop) {
+				try {
+					Session session = Session.getDefaultInstance(props, null);
+					store = session.getStore("imaps");
+					store.connect("imap.gmail.com", this.username,
+							this.password);
 
-				if (store.isConnected()) {
-					while (!this.shouldStop) {
+					while (store.isConnected()) {
 						Folder inbox = store.getFolder("inbox");
 						inbox.open(Folder.READ_WRITE);
 						// Get un-seen (unread) messages
@@ -109,7 +110,7 @@ public class GmailIMAPClient {
 								System.out.println("From: "
 										+ IMAPaddy.getAddress());
 							}
-							
+
 							// Grab our body
 							ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 							String body = "";
@@ -122,47 +123,58 @@ public class GmailIMAPClient {
 							body = outputStream.toString();
 							// Analyze it
 							PrescriptionEmailMessage.markEmailRead(body);
-							
-//							Object content = null;
-//							try {
-//								content = msg.getContent();
-//							} catch (IOException e) {
-//								e.printStackTrace();
-//							}
-//							if (content != null) {
-//								String body = "";
-//								if (content instanceof MimeMultipart) {
-//									MimeMultipart contentMulti = (MimeMultipart)content;
-//									int bodyCount = contentMulti.getCount();
-//									for (int i = 0; i < bodyCount; ++i)
-//									{
-//										BodyPart bp = contentMulti.getBodyPart(i);
-//									}
-//								} else if (msg.getContentType().toLowerCase()
-//										.startsWith("text")) {
-//									body = content.toString();
-//								}
-//
-//								// Get the body to see if we can find our
-//								// PillMessageId
-//								PrescriptionEmailMessage.markEmailRead(body);
-//							}
-						}
-						
-						inbox.close(false);
 
+							// Object content = null;
+							// try {
+							// content = msg.getContent();
+							// } catch (IOException e) {
+							// e.printStackTrace();
+							// }
+							// if (content != null) {
+							// String body = "";
+							// if (content instanceof MimeMultipart) {
+							// MimeMultipart contentMulti =
+							// (MimeMultipart)content;
+							// int bodyCount = contentMulti.getCount();
+							// for (int i = 0; i < bodyCount; ++i)
+							// {
+							// BodyPart bp = contentMulti.getBodyPart(i);
+							// }
+							// } else if (msg.getContentType().toLowerCase()
+							// .startsWith("text")) {
+							// body = content.toString();
+							// }
+							//
+							// // Get the body to see if we can find our
+							// // PillMessageId
+							// PrescriptionEmailMessage.markEmailRead(body);
+							// }
+						}
+
+						inbox.close(false);
 						// Wait 5 seconds
 						try {
 							Thread.sleep(5000);
 						} catch (InterruptedException e) {
 						}
 					}
-				}
+					
+					store.close();
+					// Wait 5 seconds
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+					}
 
-			} catch (NoSuchProviderException e) {
-				e.printStackTrace();
-			} catch (MessagingException e) {
-				e.printStackTrace();
+				} catch (NoSuchProviderException e) {
+					e.printStackTrace();
+					this.running = false;
+				} catch (MessagingException e) {
+					e.printStackTrace();
+					this.running = false;
+				} catch (Exception e) {
+					System.err.println(e.getMessage());
+				}
 			}
 			this.running = false;
 		}
