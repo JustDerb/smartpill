@@ -28,7 +28,9 @@ public class PrescriptionPanel extends JPanel {
 	private FrontendGUI parent;
 	
 	//gui elements
+	private JPanel buttonPanel;
 	private JButton submitButton;
+	private JButton backButton;
 	private SchedulerPanel schedulerPanel;
 	
 	public PrescriptionPanel(FrontendGUI parent){
@@ -53,7 +55,7 @@ public class PrescriptionPanel extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		add(schedulerPanel, gbc);
 		
-		submitButton = new JButton("Submit");
+		buttonPanel = new JPanel(new GridBagLayout());
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 2;
@@ -62,7 +64,29 @@ public class PrescriptionPanel extends JPanel {
 		gbc.insets = new Insets(3, 3, 3, 0);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
-		add(submitButton, gbc);
+		add(buttonPanel, gbc);
+		
+		submitButton = new JButton("Submit");
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 0;
+		gbc.weighty = 0;
+		gbc.insets = new Insets(3, 0, 3, 0);
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.NONE;
+		buttonPanel.add(submitButton, gbc);
+		
+		backButton = new JButton("Back");
+		gbc = new GridBagConstraints();
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		gbc.weightx = 0;
+		gbc.weighty = 0;
+		gbc.insets = new Insets(3, 3, 3, 0);
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.NONE;
+		buttonPanel.add(backButton, gbc);
 		
 		JPanel spacer = new JPanel();
 		gbc.gridx = 0;
@@ -114,6 +138,13 @@ public class PrescriptionPanel extends JPanel {
 				}
 			}
 			
+		});
+		
+		backButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				PrescriptionPanel.this.parent.setState(FrontendGUI.HOME);
+			}
 		});
 	}
 	

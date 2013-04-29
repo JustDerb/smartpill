@@ -56,7 +56,7 @@ public class FrontendGUI {
 	
 	public FrontendGUI(){
 		try {
-			tcpClient = new TCPUIClient("localhost", SmartPillDefaults.SERVER_PORT);
+			tcpClient = new TCPUIClient("10.24.86.191", SmartPillDefaults.SERVER_PORT);
 			Thread clientThread = new Thread(tcpClient);
 			clientThread.start();
 		} 
