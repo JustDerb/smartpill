@@ -19,6 +19,11 @@ import backend.DAO.PrescriptionEmailDAO;
 
 public class EmailScheduler {
 	private final ScheduledExecutorService service;
+	
+	private static final int SEC_DELAY = 30;
+
+	// 1 days
+	private static final int SEC_ALERT_DOCTOR = 24 * 60 * 60;
 
 	private GmailIMAPClient client;
 
@@ -62,11 +67,6 @@ public class EmailScheduler {
 		private boolean running;
 
 		private boolean shouldStop;
-
-		private static final int SEC_DELAY = 10;
-
-		// 1 days
-		private static final int SEC_ALERT_DOCTOR = 24 * 60 * 60;
 
 		public Emailer() {
 			this.running = false;
@@ -121,8 +121,10 @@ public class EmailScheduler {
 								email.for_doctor);
 						try {
 							aDb.insert(a);
+							email.doctor_alerted = true;
+							peDb.update(email);
 						} catch (SQLException e) {
-
+							System.err.println("checkAndAlertDoctors: " + e.getMessage());
 						}
 					}
 				}
