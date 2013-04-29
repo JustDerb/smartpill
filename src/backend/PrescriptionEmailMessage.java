@@ -24,8 +24,8 @@ public class PrescriptionEmailMessage implements Runnable {
 
 	private static final String SUBJECT = "SmartPill - Time to take your prescription";
 
-	private static final String IDENTIFIER_START = "<!-- PID:[";
-	private static final String IDENTIFIER_END = "] -->";
+	private static final String IDENTIFIER_START = "SMART_PILL_PID:[[";
+	private static final String IDENTIFIER_END = "]]";
 
 	public PrescriptionEmailMessage(Prescription prescription,
 			PrescriptionDateTime forTime, Patient forPatient,
@@ -52,10 +52,14 @@ public class PrescriptionEmailMessage implements Runnable {
 		body.append("<img alt='' src='" + this.prescription.picturePath
 				+ "' />");
 
+		body.append("<br/>");
+		body.append("<br/>");
+		body.append("<p>");
 		// Throw in our email id
 		body.append(IDENTIFIER_START);
 		body.append(emailObj.id);
 		body.append(IDENTIFIER_END);
+		body.append("</p>");
 
 		return body.toString();
 	}
