@@ -105,7 +105,7 @@ public class OutgoingMail {
 			}
 			//create another body part to add the text in
 			MimeBodyPart bt = new MimeBodyPart();
-			bt.setText(bodyText);
+			bt.setContent(bodyText, "text/html");
 			//put body text body part into the multipart
 			mp.addBodyPart(bt);
 			//put multipart into the message so it can be sent
@@ -114,7 +114,7 @@ public class OutgoingMail {
 		//if no attachments are present just set the body text without multipart stuff
 		else {
 			//set the body text for the email
-			smtp.setText(bodyText);
+			smtp.setContent(bodyText, "text/html");
 		}
 		
 		//send the email
