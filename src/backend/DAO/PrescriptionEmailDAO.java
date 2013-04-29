@@ -40,7 +40,7 @@ public class PrescriptionEmailDAO implements SQLDAO<PrescriptionEmail, Integer> 
 			ps.setInt(1, dao.forPrescriptionDateTime.id);
 			ps.setBoolean(2, dao.read);
 			ps.setBoolean(3, dao.doctor_alerted);
-			ps.setInt(3, dao.for_doctor.id);
+			ps.setInt(4, dao.for_doctor.id);
 
 			// Try and add it
 			ps.executeUpdate();
@@ -49,7 +49,7 @@ public class PrescriptionEmailDAO implements SQLDAO<PrescriptionEmail, Integer> 
 			if (rs.next()) {
 				// Retrieve the newly created id and pass back the object
 				dao.id = rs.getInt(1);
-				dao.dateTime = rs.getTimestamp(2);
+				//dao.dateTime = rs.getTimestamp(2);
 				return dao;
 			} else
 				throw new SQLException("Could not retrieve updated values");
@@ -75,8 +75,8 @@ public class PrescriptionEmailDAO implements SQLDAO<PrescriptionEmail, Integer> 
 			sb.append(" SET ");
 			sb.append("for_prescription_meta = ?, ");
 			sb.append("`read` = ?, ");
-			sb.append("`added` = ? ");
-			sb.append("`doctor_alerted` = ? ");
+			sb.append("`added` = ?, ");
+			sb.append("`doctor_alerted` = ?, ");
 			sb.append("`for_doctor` = ? ");
 			sb.append(" WHERE `id` = ?");
 

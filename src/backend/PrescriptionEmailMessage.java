@@ -61,13 +61,14 @@ public class PrescriptionEmailMessage implements Runnable {
 	}
 
 	public static boolean markEmailRead(String messageBody) {
+		String messageBody2 = messageBody.replace("\r\n>", "");
 		// Try and find the email ID prefix
-		int PIDIndex = messageBody.indexOf(IDENTIFIER_START);
+		int PIDIndex = messageBody2.indexOf(IDENTIFIER_START);
 		if (PIDIndex < 0) {
 			return false;
 		} else {
 			// Try and find the email ID postfix
-			String choppedMessage = messageBody.substring(PIDIndex);
+			String choppedMessage = messageBody2.substring(PIDIndex);
 			int PIDEndIndex = choppedMessage.indexOf(IDENTIFIER_END);
 			if (PIDEndIndex < 0) {
 				return false;

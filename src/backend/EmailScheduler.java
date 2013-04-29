@@ -141,7 +141,7 @@ public class EmailScheduler {
 				// Grab all reminders that are within 10 seconds of needing
 				// to be sent
 				StringBuilder sql = new StringBuilder();
-				sql.append("SELECT `prescription_id` ");
+				sql.append("SELECT `id` ");
 				sql.append("FROM  `prescription_meta` ");
 				sql.append("WHERE TIME_TO_SEC(ABS(TIMEDIFF(CURTIME(), `day_time`))) < "
 						+ SEC_DELAY + ";");
@@ -154,15 +154,15 @@ public class EmailScheduler {
 
 				while (result.next()) {
 					PrescriptionDateTime pdt = pdtDb.findByPrimaryKey(result
-							.getInt("prescription_id"));
+							.getInt("id"));
 
 					PrescriptionDAO pDb = new PrescriptionDAO();
 					Prescription p = pDb.findByPrimaryKey(pdt.forPrescription);
 
 					System.out.println("Sending reminder to "
 							+ p.for_patient.name + " about " + p.name);
-					service.schedule(new PrescriptionEmailMessage(p, pdt,
-							p.for_patient, client), 0, TimeUnit.MILLISECONDS);
+					service.execute(new PrescriptionEmailMessage(p, pdt,
+							p.for_patient, client));
 				}
 
 				conn.close();
