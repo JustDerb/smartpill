@@ -19,7 +19,7 @@ import backend.DAO.PrescriptionEmailDAO;
 
 public class EmailScheduler {
 	private final ScheduledExecutorService service;
-	
+
 	private static final int SEC_DELAY = 30;
 
 	// 1 days
@@ -124,7 +124,8 @@ public class EmailScheduler {
 							email.doctor_alerted = true;
 							peDb.update(email);
 						} catch (SQLException e) {
-							System.err.println("checkAndAlertDoctors: " + e.getMessage());
+							System.err.println("checkAndAlertDoctors: "
+									+ e.getMessage());
 						}
 					}
 				}
@@ -155,16 +156,33 @@ public class EmailScheduler {
 				PrescriptionEmailDAO peDb = new PrescriptionEmailDAO();
 
 				while (result.next()) {
-					PrescriptionDateTime pdt = pdtDb.findByPrimaryKey(result
-							.getInt("id"));
+					// Check if we've sent an email already
+					StringBuilder sqlEmail = new StringBuilder();
+					sqlEmail.append("SELECT `id` ");
+					sqlEmail.append("FROM  `email` ");
+					sqlEmail.append("WHERE `for_prescription_meta` = ? ");
+					// Add extra seconds to compensate for the delay
+					sqlEmail.append("AND TIME_TO_SEC(ABS(UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(`added`))) < "
+							+ ((int)(SEC_DELAY * 1.5)) + ";");
 
-					PrescriptionDAO pDb = new PrescriptionDAO();
-					Prescription p = pDb.findByPrimaryKey(pdt.forPrescription);
+					PreparedStatement psEmail = conn.prepareStatement(sqlEmail
+							.toString());
+					psEmail.setInt(1, result.getInt("id"));
 
-					System.out.println("Sending reminder to "
-							+ p.for_patient.name + " about " + p.name);
-					service.execute(new PrescriptionEmailMessage(p, pdt,
-							p.for_patient, client));
+					ResultSet resultEmail = psEmail.executeQuery();
+					if (!resultEmail.next()) {
+						PrescriptionDateTime pdt = pdtDb
+								.findByPrimaryKey(result.getInt("id"));
+
+						PrescriptionDAO pDb = new PrescriptionDAO();
+						Prescription p = pDb
+								.findByPrimaryKey(pdt.forPrescription);
+
+						System.out.println("Sending reminder to "
+								+ p.for_patient.name + " about " + p.name);
+						service.execute(new PrescriptionEmailMessage(p, pdt,
+								p.for_patient, client));
+					}
 				}
 
 				conn.close();
