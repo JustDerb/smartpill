@@ -122,7 +122,10 @@ public class GmailIMAPClient {
 							// Convert to a string
 							body = outputStream.toString();
 							// Analyze it
-							PrescriptionEmailMessage.markEmailRead(body);
+							if (PrescriptionEmailMessage.markEmailRead(body))
+								System.out.println("Got prescription taken email.");
+							else
+								System.out.println("Got email, but didn't find PID!");
 
 							// Object content = null;
 							// try {
