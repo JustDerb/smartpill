@@ -77,7 +77,7 @@ public class FrontendGUI {
 		state = LOGIN;
 		frame.add(panel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(400, 600);
+		frame.setSize(400, 300);
 		frame.setVisible(true);
 		
 	}
@@ -400,6 +400,7 @@ public class FrontendGUI {
 	public void setState(int view){
 		panel.removeAll();
 		if (view == LOGIN){
+			frame.setSize(400, 300);
 			panel.add(loginPanel, BorderLayout.CENTER);
 			state = LOGIN;
 		}
@@ -407,6 +408,7 @@ public class FrontendGUI {
 			if (homePanel == null){
 				homePanel = new HomePage(this);
 			}
+			frame.setSize(400, 600);
 			panel.add(homePanel, BorderLayout.CENTER);
 			state = HOME;
 		}
@@ -414,6 +416,7 @@ public class FrontendGUI {
 			if (patientPanel == null){
 				patientPanel = new PatientPanel(this);
 			}
+			frame.setSize(400, 600);
 			panel.add(patientPanel, BorderLayout.CENTER);
 			state = PATIENT;
 		}
