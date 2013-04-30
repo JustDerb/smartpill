@@ -42,4 +42,9 @@ public class Prescription implements Serializable {
 		this.for_patient = for_patient;
 		// this.dateTimes = dateTimes;
 	}
+	
+	@Override
+	public String toString() {
+		return name + " " + dosage;
+	}
 }

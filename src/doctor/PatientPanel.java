@@ -3,14 +3,21 @@ package doctor;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import shared.Alert;
 import shared.Patient;
+import shared.Prescription;
 
 public class PatientPanel extends JPanel{
 	
@@ -31,6 +38,7 @@ public class PatientPanel extends JPanel{
 	private JLabel headerNameLabel;
 	private JLabel headerEmailLabel;
 	private PrescriptionPanel presPanel;
+	private SchedulePanel schedulePanel;
 	
 	public PatientPanel(FrontendGUI parent){
 		super(new GridBagLayout());
@@ -48,7 +56,9 @@ public class PatientPanel extends JPanel{
 		
 		tabPane = new JTabbedPane();
 		presPanel = new PrescriptionPanel(parent);
+		schedulePanel = new SchedulePanel(parent);
 		tabPane.addTab("PrescriptionPanel", presPanel);
+		tabPane.addTab("SchedulePanel", schedulePanel);
 		scrollPane = new JScrollPane(tabPane);
 		gbc.gridx = 0;
 		gbc.gridy = 1;
@@ -93,8 +103,13 @@ public class PatientPanel extends JPanel{
 		}
 		headerEmailLabel.setText("Email: " + email);
 		headerNameLabel.setText("Name: " + name);
+		schedulePanel.setPatientInfo();
 		revalidate();
 		repaint();
+	}
+	
+	public void updateSchedule(){
+		schedulePanel.setPatientInfo();
 	}
 	
 	public class SchedulePanel extends JPanel{
@@ -104,17 +119,61 @@ public class PatientPanel extends JPanel{
 		 */
 		private static final long serialVersionUID = 1L;
 		
-		//gui parts
-		private JScrollPane scheduleScrollPane;
-		private JList<String> scheduleList;
+		/**
+		 * The parent of this object.
+		 */
 		private FrontendGUI parent;
 		
+		//gui parts
+		private JScrollPane scheduleScrollPane;
+		private JPanel listPanel;
+		private JList<Prescription> scheduleList;
+		private JButton removePrescription;
+		
 		public SchedulePanel(FrontendGUI parent){
+			super(new BorderLayout());
 			this.parent = parent;
+			
+			scheduleList = new JList<Prescription>();
+			listPanel = new JPanel(new BorderLayout());
+			listPanel.add(scheduleList, BorderLayout.CENTER);
+			scheduleScrollPane = new JScrollPane(listPanel);
+			add(scheduleScrollPane, BorderLayout.CENTER);
+			
+			removePrescription = new JButton("Remove Prescription");
+			add(removePrescription, BorderLayout.SOUTH);
+			
+			removePrescription.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (!scheduleList.isSelectionEmpty()){
+						boolean marked = PatientPanel.this.parent.removePrescription(scheduleList.getSelectedValue());
+						//remove it from the JList if it has been marked as read
+						if (marked){
+							int index = scheduleList.getSelectedIndex();
+							DefaultListModel<Prescription> model = (DefaultListModel<Prescription>) scheduleList.getModel();
+							model.removeElementAt(index);
+						}
+						setPatientInfo();
+					}
+				}
+			});
 		}
 		
 		public void setPatientInfo(){
+			List<Prescription> list = parent.getPrescriptions();
+
+			listPanel.removeAll();
+			DefaultListModel<Prescription> model = new DefaultListModel<Prescription>();
+			for (Prescription p: list){
+				model.addElement(p);
+			}
+			scheduleList = new JList<Prescription>(model);
 			
+			listPanel.add(scheduleList, BorderLayout.CENTER);
+			System.out.println("Called SchedulePanel.setPatientInfo " + list.size());
+			revalidate();
+			repaint();
 		}
 	}
 }

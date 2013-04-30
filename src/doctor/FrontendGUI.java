@@ -174,6 +174,10 @@ public class FrontendGUI {
 		return ret;
 	}
 	
+	/**
+	 * Returns all of the alerts that are associated with the doctor currently using the program.
+	 * @return All unread alerts for the current doctor.
+	 */
 	public List<Alert> getAlerts(){
 //		//test code for adding alerts
 //		Alert a = new Alert("Test", "Testing alert adding 4", AlertType.PATIENT, doctor);
@@ -217,6 +221,37 @@ public class FrontendGUI {
 	}
 	
 	/**
+	 * Returns the list of prescriptions that are associated with the currently selected patient.
+	 * @return List of prescriptions assigned to the current patient.
+	 */
+	public List<Prescription> getPrescriptions(){
+		List<Prescription> ret = new ArrayList<Prescription>();
+		
+		RetrievalMessage rMessage = new RetrievalMessage(Retrieve.PATIENT_GET_PRESCRIPTION, patient);
+		try {
+			tcpClient.sendMessage(rMessage);
+			Object obj = tcpClient.getResponse();
+			if (obj instanceof List<?>){
+				List<?> unknownList = (List<?>) obj;
+				if (unknownList != null && unknownList.size() > 0){
+					//add all instances of prescription to the return list
+					for (int i = 0; i < unknownList.size(); i++){
+						if (unknownList.get(i) instanceof Prescription){
+							ret.add((Prescription) unknownList.get(i));
+						}
+					}
+					
+				}
+			}
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return ret;
+	}
+	
+	/**
 	 * Marks an Alert as read in the database as of right now it is just being deleted rather than being marked as read though there 
 	 * is no difference between the two from the GUI point of view.
 	 * @param alert to be marked as read.
@@ -226,6 +261,24 @@ public class FrontendGUI {
 		boolean ret = false;
 		//deletes the Alert form the database
 		DatabaseControl dbControl = new DatabaseControl(DatabaseControl.DbType.DELETE, alert);
+		try {
+			tcpClient.sendMessage(dbControl);
+			Object obj = tcpClient.getResponse();
+			if (obj instanceof DatabaseControl){
+				//this will be true if it was removed
+				ret = (Boolean) ((DatabaseControl) obj).object;
+			}
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
+	public boolean removePrescription(Prescription p){
+		boolean ret = false;
+		//deletes the Alert form the database
+		DatabaseControl dbControl = new DatabaseControl(DatabaseControl.DbType.DELETE, p);
 		try {
 			tcpClient.sendMessage(dbControl);
 			Object obj = tcpClient.getResponse();
@@ -283,6 +336,7 @@ public class FrontendGUI {
 			}
 		}
 		
+		patientPanel.updateSchedule();
 		return ret;
 	}
 	
