@@ -121,8 +121,15 @@ public class PrescriptionEmailMessage implements Runnable {
 			PrescriptionEmail email = new PrescriptionEmail(this.forTime, this.forPatient.for_doctor);
 			PrescriptionEmailDAO emailDb = new PrescriptionEmailDAO();
 			email = emailDb.insert(email);
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append(SUBJECT);
+			sb.append(" (");
+			sb.append(this.prescription.name);
+			sb.append(") - ");
+			sb.append(this.forTime.timeOfDay.toString());
 
-			this.client.SendEmail(this.forPatient.email, SUBJECT,
+			this.client.SendEmail(this.forPatient.email, sb.toString(),
 					getBody(email));			
 		} catch (Exception e) {
 			System.out.println("Failed to send email to: "
