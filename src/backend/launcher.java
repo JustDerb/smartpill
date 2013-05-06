@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import nogit.EmailCreds;
 
 import backend.DAO.AlertDAO;
 import backend.DAO.DoctorDAO;

@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nogit.SQLCreds;
 
 public class Version {
 
